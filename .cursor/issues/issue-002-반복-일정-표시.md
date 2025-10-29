@@ -148,7 +148,24 @@
 - Outputs: 변경 파일/주요 변경 요약
 - Artifacts: 소스 코드 경로
   <!-- IMPLEMENTATION_START -->
-  (자동 기록)
+
+  Inputs:
+
+  - 실패 테스트: `src/__tests__/integration/recurringIcon.integration.spec.tsx` (TC-01,03,05,06)
+  - 요구사항 핵심: 반복 일정에만 아이콘 표시, `aria-label="반복 일정"`, `data-testid="recurring-icon"`
+
+  Actions:
+
+  - `src/App.tsx`
+    - 월/주 뷰의 이벤트 항목에 반복 아이콘 요소 추가: `<span role="img" aria-label="반복 일정" data-testid="recurring-icon">🔁</span>` (반복 일정에만 노출)
+
+  Outputs:
+
+  - 모든 테스트 GREEN (recurringIcon 스위트 포함)
+
+  Artifacts:
+
+  - 변경 파일: `src/App.tsx`
   <!-- IMPLEMENTATION_END -->
 
 ---
@@ -167,6 +184,6 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `테스트 설계(초안) 완료`
-- 마지막 수정 에이전트: 테스트 설계 에이전트(Kentback)
-- 주요 변경사항 요약: 테스트 계획 요약/시나리오(SC-01~06) 구체화, 테스트 케이스 상세(TC-01~08) 작성, 테스트 로그 기록
+- 상태: `코드 작성(Green) 완료`
+- 마지막 수정 에이전트: 코드 작성 에이전트(Nova)
+- 주요 변경사항 요약: 월/주 뷰에 반복 아이콘 표시 요소 추가(접근성 라벨/테스트ID), 모든 테스트 GREEN
