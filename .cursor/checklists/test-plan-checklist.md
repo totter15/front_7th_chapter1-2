@@ -1,15 +1,24 @@
 # Test Plan Checklist
 
-- [ ] 사용자의 실제 행동과 화면 변화를 중심으로 테스트를 설계했는가?
+## 사용자 관점 (User-centric)
 
-- [ ] 내부 구현(data-testid, container.querySelector)이 아닌 접근을 사용했는가?
+- [ ] 테스트가 사용자 행동 기반으로 작성되었는가?
+      버튼 클릭, 폼 입력, 화면 전환 등 실제 사용자 시나리오를 기반으로 테스트하는가
 
-- [ ] @testing-library/jest-dom의 matcher (toBeVisible, toHaveTextContent, 등)를 활용했는가?
+- [ ] 시각적 또는 상태 기반이 아닌, 결과 중심의 테스트인가?
+      클래스명, 내부 state 대신 사용자에게 보이는 결과를 검증하는가
 
-- [ ] 비동기 동작에는 findBy\* 또는 적절한 waitFor를 사용했는가?
+- [ ] 테스트 케이스 이름이 명확하게 의도를 드러내는가?
+      “renders correctly” → “사용자가 로그인하면 대시보드로 이동한다”
 
-- [ ] act()를 불필요하게 감싸지 않았는가?
+- [ ] AAA(Arrange–Act–Assert) 구조로 작성되었는가?
+      준비 → 행동 → 검증 단계가 명확한가
 
-- [ ] 테스트가 화면 변경에 과도하게 의존하지 않도록 쿼리를 설계했는가?
+- [ ] 테스트 이름이 Given–When–Then 구조를 따르는가?
+      시나리오 기반으로 쉽게 읽히는가
 
-- [ ] ESLint 규칙을 적용했는가? (eslint-plugin-testing-library, eslint-plugin-jest-dom)
+- [ ] 단순 UI 렌더링보다 비즈니스 규칙을 검증하는가?
+      재고 0 → 버튼 비활성화 등
+
+- [ ] edge case(예외 상황)에 대한 테스트도 포함되어 있는가?
+      네트워크 에러, 입력 검증 등

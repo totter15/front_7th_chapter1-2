@@ -26,33 +26,30 @@
 
 ---
 
-## ✅ 수용 기준 (Acceptance Criteria — GWT with IDs)
-
-- [ ] AC-1: Given …, When …, Then …
-- [ ] AC-2: Given …, When …, Then …
-- [ ] AC-3: …
-
----
-
 ## 🧪 테스트 계획 요약 (Test Plan Summary)
 
-- Plan Doc: `.cursor/specs/test-plan-[slug].md`
-- Coverage Target: 핵심 로직 100% 또는 근거 제시
-- Mocks/Fixtures: Time(Date mocks) | Network(MSW) | Storage | Sample Data 출처
+- Coverage Target: 반복 규칙(월 31일/윤년 2/29) 및 Hook 상태 전이 100%
+- Mocks/Fixtures: Time(vi.useFakeTimers + vi.setSystemTime) | Network(MSW, 필요 시) | Storage(in-memory) | 샘플 기준일(2024-01-31, 2024-02-29 등)
 
-### Test Matrix (AC ↔ Test)
+### 테스트 시나리오 개요 (Scenario Overview)
 
-| AC   | Type (Unit/Hook/Integration) | File Path (예정)              | Notes |
-| ---- | ---------------------------- | ----------------------------- | ----- |
-| AC-1 | Hook                         | src/**tests**/hooks/...       |       |
-| AC-2 | Unit                         | src/**tests**/unit/...        |       |
-| AC-3 | Integration                  | src/**tests**/integration/... |       |
+| 시나리오 ID | 시나리오명             | 주요 검증 포인트            |
+| ----------- | ---------------------- | --------------------------- |
+| SC-01       | 반복 유형 선택 UI 노출 | 셀렉트 박스, 옵션 노출 여부 |
+| SC-02       | 매일 반복 생성         | 하루 단위 반복 생성 확인    |
+| SC-03       | 매월 31일 생성         | 31일 있는 달만 생성됨       |
+| SC-04       | 윤년 2월 29일 생성     | 윤년 판단 및 생성 검증      |
+| SC-05       | 반복 종료 조건         | 지정 횟수 이후 생성 중단    |
 
-### Test Cases (절차 기반 테이블)
+### 테스트 케이스 상세 (Test Case Detail)
 
-| ID    | 목적 | 전제 조건 | 수행 절차 | 기대 결과 | 고려 사항 |
-| ----- | ---- | --------- | --------- | --------- | --------- |
-| TC-01 | ...  | ...       | ...       | ...       | ...       |
+| TC ID | 목적                    | 전제조건           | 입력/행동           | 기대결과                            | 고려사항                       |
+| ----- | ----------------------- | ------------------ | ------------------- | ----------------------------------- | ------------------------------ |
+| TC-01 | 반복유형 UI 노출 확인   | 화면 진입 완료     | 일정 생성 폼 렌더링 | “매일/매주/매월/매년” 옵션이 표시됨 | getByRole, getByLabelText 사용 |
+| TC-02 | 매일 반복 일정 생성     | 시작일: 2025-10-29 | “매일” 선택 후 저장 | 다음날부터 일정 생성                | 날짜 증가 로직 검증            |
+| TC-03 | 매월 31일 생성 확인     | 시작일: 2025-01-31 | 반복일: 31 입력     | 31일 있는 달만 생성됨               | 2, 4, 6, 9, 11월 제외          |
+| TC-04 | 윤년 2월 29일 생성 확인 | 시작일: 2024-02-29 | 반복유형: 매년 선택 | 윤년에만 생성됨 (2028, 2032 등)     | 윤년 판정 로직                 |
+| TC-05 | 반복 종료 조건 확인     | 회수: 10회 설정    | 저장                | 10회 이후 일정 생성 안 됨           | 종료 조건 처리 로직            |
 
 ---
 
@@ -73,7 +70,10 @@
 - Outputs: Test Plan 링크/요약, Matrix 업데이트
 - Artifacts: `.cursor/specs/test-plan-[slug].md`
   <!-- TEST_DESIGN_START -->
-  (자동 기록)
+  Inputs: Issue 요구사항/범위/AC(초안)
+  Actions: Test Plan 생성(`.cursor/specs/test-plan-반복-유형-선택.md`), Test Matrix/케이스 초안 작성, 모킹 전략 정의
+  Outputs: 요약/매트릭스/케이스 업데이트, 파일 경로 제안
+  Artifacts: Test Plan 문서 1건
   <!-- TEST_DESIGN_END -->
 
 ---
