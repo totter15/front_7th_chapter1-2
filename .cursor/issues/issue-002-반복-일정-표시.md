@@ -117,7 +117,26 @@
 - Outputs: 커밋/PR 링크, 주요 테스트 스니펫
 - Artifacts: `src/__tests__/*`
   <!-- TEST_CODE_START -->
-  (자동 기록)
+
+  Inputs:
+
+  - 테스트 케이스: TC-01 ~ TC-07
+  - 초기 이벤트 데이터(msw): 반복 1건(daily), 비반복 1건(none)
+
+  Actions:
+
+  - 통합 테스트 신규 추가(`month`/`week` 뷰)
+  - 접근성 쿼리(`getByLabelText('반복 일정')`) 및 `data-testid('recurring-icon')` 검증
+  - 검색어 적용 시 아이콘 비노출(표시 전용 보장) 확인
+
+  Outputs:
+
+  - 새로운 통합 테스트 파일 추가 및 TC-01~TC-07 구현(RED 예상)
+
+  Artifacts:
+
+  - 생성 파일: `src/__tests__/integration/recurringIcon.integration.spec.tsx`
+
   <!-- TEST_CODE_END -->
 
 ---
