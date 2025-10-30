@@ -1,5 +1,5 @@
 import { Event, RepeatType } from '../types';
-import { isDateInRange, getWeekDates } from './dateUtils';
+import { isDateInRange } from './dateUtils';
 
 function parseYMD(dateStr: string): Date {
   const [y, m, d] = dateStr.split('-').map((v) => Number(v));

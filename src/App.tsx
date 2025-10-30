@@ -430,7 +430,16 @@ function App() {
               control={
                 <Checkbox
                   checked={isRepeating}
-                  onChange={(e) => setIsRepeating(e.target.checked)}
+                  onChange={(e) => {
+                    const next = e.target.checked;
+                    setIsRepeating(next);
+                    if (next && repeatType === 'none') {
+                      setRepeatType('daily' as RepeatType);
+                    }
+                    if (!next) {
+                      setRepeatType('none' as RepeatType);
+                    }
+                  }}
                 />
               }
               label="반복 일정"
@@ -459,7 +468,7 @@ function App() {
                 <FormLabel>반복 유형</FormLabel>
                 <Select
                   size="small"
-                  value={repeatType}
+                  value={repeatType === 'none' ? '' : (repeatType as string)}
                   onChange={(e) => setRepeatType(e.target.value as RepeatType)}
                 >
                   <MenuItem value="daily">매일</MenuItem>
