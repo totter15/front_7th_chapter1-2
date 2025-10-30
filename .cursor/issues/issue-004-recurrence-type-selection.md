@@ -118,7 +118,13 @@
 - Outputs: 변경 파일/주요 변경 요약
 - Artifacts: 소스 코드 경로
   <!-- IMPLEMENTATION_START -->
-  (자동 기록)
+  Inputs: 실패 테스트(UI 반복 필드 노출, 반복 생성 규칙)
+  Actions:
+  - App: 반복 UI 활성화 및 상태 연결(setRepeatType/Interval/EndDate)
+  - Utils: `eventUtils.ts`에 반복 확장 로직 추가(일/주/월/년, 31일/2월29일 규칙)
+    Outputs:
+  - Updated: `src/App.tsx`
+  - Updated: `src/utils/eventUtils.ts`
   <!-- IMPLEMENTATION_END -->
 
 ---
@@ -137,6 +143,6 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `테스트 코드 작성`
-- 마지막 수정 에이전트: 테스트 코드 에이전트
-- 주요 변경사항 요약: RED 테스트 추가(UI 반복 필드 노출). 비존재 유틸 의존 테스트 제거
+- 상태: `코드 작성`
+- 마지막 수정 에이전트: 구현 에이전트
+- 주요 변경사항 요약: 반복 UI 활성화 및 반복 확장 로직 구현(31일/2월29일 규칙 반영)
