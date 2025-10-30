@@ -103,13 +103,18 @@
 - Outputs: 리팩토링 포인트/전후 비교
 - Safeguard: 모든 테스트 Green 유지
   <!-- REFACTORING_START -->
-  (자동 기록)
+  Inputs: Green 상태
+  Actions:
+  - recurrence: 종료일 상한 보정 로직 함수화(`getCappedEndDate`) 및 상수(`CAP_END_DATE`) 도입
+  - 목적: 중복 제거/의도 명확화
+  Outputs:
+  - Updated: `src/utils/recurrence.ts`
   <!-- REFACTORING_END -->
 
 ---
 
 ## 🧾 요약 (Summary)
 
-- 상태: `코드 작성`
-- 마지막 수정 에이전트: 구현 에이전트
-- 주요 변경사항 요약: 반복 종료 상한(2025-12-31) 보정 로직 구현, 종료일 포함 규칙 유지
+- 상태: `리팩토링`
+- 마지막 수정 에이전트: 리팩토링 에이전트
+- 주요 변경사항 요약: 상한 보정 로직 함수 추출 및 상수화(CAP_END_DATE), 가독성 개선

@@ -1,6 +1,13 @@
 import { Event, RepeatType } from '../types';
 import { isDateInRange } from './dateUtils';
 
+const CAP_END_DATE = new Date(2025, 11, 31); // 2025-12-31
+
+function getCappedEndDate(raw: Date | null): Date | null {
+  if (!raw) return null;
+  return raw > CAP_END_DATE ? CAP_END_DATE : raw;
+}
+
 function parseYMD(dateStr: string): Date {
   const [y, m, d] = dateStr.split('-').map((v) => Number(v));
   return new Date(y, m - 1, d);
@@ -24,11 +31,7 @@ export function generateOccurrencesForEvent(
   const interval = Math.max(1, event.repeat.interval || 1);
   const hasEnd = Boolean(event.repeat.endDate);
   const repeatEndDateRaw = hasEnd ? parseYMD(event.repeat.endDate as string) : null;
-  // Cap: end date must not exceed 2025-12-31
-  const capEndDate = new Date(2025, 11, 31);
-  const repeatEndDate = repeatEndDateRaw
-    ? (repeatEndDateRaw > capEndDate ? capEndDate : repeatEndDateRaw)
-    : null;
+  const repeatEndDate = getCappedEndDate(repeatEndDateRaw);
 
   const maybeInclude = (occurrenceDate: Date) => {
     if (repeatEndDate && occurrenceDate > repeatEndDate) return;
