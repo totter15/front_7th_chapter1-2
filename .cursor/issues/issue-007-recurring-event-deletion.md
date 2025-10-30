@@ -100,15 +100,19 @@
 - Outputs: 리팩토링 포인트/전후 비교
 - Safeguard: 모든 테스트 Green 유지
   <!-- REFACTORING_START -->
-  (자동 기록)
+  Inputs: Green 상태
+  Actions:
+  - baseId/occurrenceKey 유틸(`utils/eventId.ts`)로 분리
+  - App의 split('-')[0] 사용부를 헬퍼로 치환
+  Outputs:
+  - Added: `src/utils/eventId.ts`
+  - Updated: `src/App.tsx`
   <!-- REFACTORING_END -->
 
 ---
 
 ## 🧾 요약 (Summary)
 
-- 상태: `기획`
-- 마지막 수정 에이전트: Issue Writer (PM)
-- 주요 변경사항 요약: 반복 일정 삭제(단일/전체) 요구사항/테스트 계획 정리
-
-
+- 상태: `리팩토링`
+- 마지막 수정 에이전트: 리팩토링 에이전트
+- 주요 변경사항 요약: 삭제 다이얼로그(GREEN) 완료, 유틸 추출로 가독성 개선

@@ -54,6 +54,7 @@ import {
   getWeeksAtMonth,
 } from './utils/dateUtils';
 import { getListEvents } from './utils/eventList';
+import { getBaseId, getOccurrenceKeyFromParts } from './utils/eventId';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
 
@@ -109,8 +110,9 @@ function App() {
     editEvent,
   } = useEventForm();
 
-  const { events, saveEvent, deleteEvent, deleteRecurringSeries } = useEventOperations(Boolean(editingEvent), () =>
-    setEditingEvent(null)
+  const { events, saveEvent, deleteEvent, deleteRecurringSeries } = useEventOperations(
+    Boolean(editingEvent),
+    () => setEditingEvent(null)
   );
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
@@ -170,8 +172,8 @@ function App() {
 
   const visibleEvents = useMemo(() => {
     const filtered = filteredEvents.filter((e) => {
-      const baseId = (typeof e.id === 'string' ? e.id : '').split('-')[0];
-      const key = `${baseId}-${e.date}`;
+      const baseId = getBaseId(e.id as string);
+      const key = getOccurrenceKeyFromParts(baseId, e.date);
       return !singleDeletedOccurrences.has(key);
     });
     return filtered;
@@ -233,7 +235,7 @@ function App() {
                           >
                             <Stack direction="row" spacing={1} alignItems="center">
                               {event.repeat.type !== 'none' &&
-                                !singleEditedBaseIds.has(event.id.split('-')[0]) && (
+                                !singleEditedBaseIds.has(getBaseId(event.id)) && (
                                   <RepeatA11yIcon />
                                 )}
                               {isNotified && <Notifications fontSize="small" />}
@@ -324,7 +326,7 @@ function App() {
                                 >
                                   <Stack direction="row" spacing={1} alignItems="center">
                                     {event.repeat.type !== 'none' &&
-                                      !singleEditedBaseIds.has(event.id.split('-')[0]) && (
+                                      !singleEditedBaseIds.has(getBaseId(event.id)) && (
                                         <RepeatA11yIcon />
                                       )}
                                     {isNotified && <Notifications fontSize="small" />}
@@ -604,7 +606,7 @@ function App() {
                     <Typography>{event.location}</Typography>
                     <Typography>카테고리: {event.category}</Typography>
                     {event.repeat.type !== 'none' &&
-                      !singleEditedBaseIds.has(event.id.split('-')[0]) && (
+                      !singleEditedBaseIds.has(getBaseId(event.id)) && (
                         <Typography>
                           반복: {event.repeat.interval}
                           {event.repeat.type === 'daily' && '일'}
@@ -719,7 +721,7 @@ function App() {
                 return;
               }
               // Single edit: locally mark base id as single-edited (icon 제거)
-              const baseId = recurringEditTarget.id.split('-')[0];
+              const baseId = getBaseId(recurringEditTarget.id);
               setSingleEditedBaseIds((prev) => new Set(prev).add(baseId));
               setIsRecurringEditDialogOpen(false);
               setRecurringEditTarget(null);
@@ -739,7 +741,10 @@ function App() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={isRecurringDeleteDialogOpen} onClose={() => setIsRecurringDeleteDialogOpen(false)}>
+      <Dialog
+        open={isRecurringDeleteDialogOpen}
+        onClose={() => setIsRecurringDeleteDialogOpen(false)}
+      >
         <DialogTitle>반복 일정 삭제</DialogTitle>
         <DialogContent>
           <DialogContentText>해당 일정만 삭제하시겠어요?</DialogContentText>
@@ -751,8 +756,8 @@ function App() {
                 setIsRecurringDeleteDialogOpen(false);
                 return;
               }
-              const baseId = recurringDeleteTarget.id.split('-')[0];
-              const key = `${baseId}-${recurringDeleteTarget.date}`;
+              const baseId = getBaseId(recurringDeleteTarget.id);
+              const key = getOccurrenceKeyFromParts(baseId, recurringDeleteTarget.date);
               setSingleDeletedOccurrences((prev) => new Set(prev).add(key));
               setIsRecurringDeleteDialogOpen(false);
               setRecurringDeleteTarget(null);
@@ -766,7 +771,7 @@ function App() {
                 setIsRecurringDeleteDialogOpen(false);
                 return;
               }
-              const baseId = recurringDeleteTarget.id.split('-')[0];
+              const baseId = getBaseId(recurringDeleteTarget.id);
               await deleteRecurringSeries(baseId);
               setIsRecurringDeleteDialogOpen(false);
               setRecurringDeleteTarget(null);
