@@ -149,6 +149,10 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `리팩토링`
-- 마지막 수정 에이전트: 리팩토링 에이전트
-- 주요 변경사항 요약: 반복 헬퍼 분리(`recurrence.ts`), 이벤트 필터 로직 정리 및 경고 제거
+- 상태: `완료`
+- 마지막 수정 에이전트: 오케스트레이터
+- 주요 변경사항 요약: 테스트(RED) → 구현(GREEN) → 리팩토링 완료. 커밋 요약 —
+  - test(issue-004): add RED integration tests for recurrence UI and rules
+  - feat(issue-004): enable recurrence UI and expand recurring events
+  - test(issue-004): stabilize MUI recurrence tests (UI + generation)
+  - refactor(issue-004): extract recurrence helpers and delegate expansion
