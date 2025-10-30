@@ -44,9 +44,9 @@
 
 ## 🔁 TDD 사이클 (Red → Green → Refactor)
 
-- [ ] Red: 실패하는 테스트 추가 (Test Code Agent)
-- [ ] Green: 최소 구현으로 통과 (Implementation Agent)
-- [ ] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
+- [x] Red: 실패하는 테스트 추가 (Test Code Agent)
+- [x] Green: 최소 구현으로 통과 (Implementation Agent)
+- [x] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
 
 ---
 
@@ -104,7 +104,7 @@
   Actions:
   - baseId/occurrenceKey 유틸(`utils/eventId.ts`)로 분리
   - App의 split('-')[0] 사용부를 헬퍼로 치환
-  Outputs:
+    Outputs:
   - Added: `src/utils/eventId.ts`
   - Updated: `src/App.tsx`
   <!-- REFACTORING_END -->
@@ -113,6 +113,10 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `리팩토링`
-- 마지막 수정 에이전트: 리팩토링 에이전트
-- 주요 변경사항 요약: 삭제 다이얼로그(GREEN) 완료, 유틸 추출로 가독성 개선
+- 상태: `완료`
+- 마지막 수정 에이전트: 오케스트레이터
+- 주요 변경사항 요약: RED→GREEN→REFACTOR 완료. 커밋 요약 —
+  - test(issue-007): RED→GREEN for recurring delete with dialog and series API
+  - refactor(issue-007): extract baseId/occurrence key helpers and apply in App
+  - style(app): inline RepeatA11yIcon conditional rendering in calendar cells
+  - chore(tests,utils): commit missing files (eventId, eventList, recurring-delete tests)
