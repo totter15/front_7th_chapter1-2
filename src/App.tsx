@@ -53,6 +53,7 @@ import {
   getWeekDates,
   getWeeksAtMonth,
 } from './utils/dateUtils';
+import { getListEvents } from './utils/eventList';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
 
@@ -124,23 +125,7 @@ function App() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const listEvents = useMemo(() => {
-    const seen = new Set<string>();
-    const results: Event[] = [];
-    for (const e of filteredEvents as any[]) {
-      const idStr = typeof e?.id === 'string' ? (e.id as string) : '';
-      if (!idStr) {
-        results.push(e as Event);
-        continue;
-      }
-      const baseId = idStr.split('-')[0];
-      if (seen.has(baseId)) continue;
-      seen.add(baseId);
-      const original = events.find((ev) => ev.id === baseId);
-      results.push(original ?? (e as Event));
-    }
-    return results;
-  }, [filteredEvents, events]);
+  const listEvents = useMemo(() => getListEvents(filteredEvents, events), [filteredEvents, events]);
 
   const addOrUpdateEvent = async () => {
     if (!title || !date || !startTime || !endTime) {

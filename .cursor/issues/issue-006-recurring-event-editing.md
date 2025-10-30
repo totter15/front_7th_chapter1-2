@@ -99,7 +99,7 @@
   - App: 반복 수정 확인 다이얼로그 추가(예/아니오)
   - 단일 수정(예): 로컬 기준으로 해당 시리즈를 단일로 취급(아이콘 제거)
   - 전체 수정(아니오): 시리즈 유지(아이콘 유지)
-  Outputs:
+    Outputs:
   - Updated: `src/App.tsx`
   <!-- IMPLEMENTATION_END -->
 
@@ -112,13 +112,19 @@
 - Outputs: 리팩토링 포인트/전후 비교
 - Safeguard: 모든 테스트 Green 유지
   <!-- REFACTORING_START -->
-  (자동 기록)
+  Inputs: Green 상태
+  Actions:
+  - event list 중복 제거 로직을 `utils/eventList.ts`로 추출(`getListEvents`)
+  - App에서 헬퍼 사용으로 Hook 순서/가독성 개선
+  Outputs:
+  - Added: `src/utils/eventList.ts`
+  - Updated: `src/App.tsx`
   <!-- REFACTORING_END -->
 
 ---
 
 ## 🧾 요약 (Summary)
 
-- 상태: `코드 작성`
-- 마지막 수정 에이전트: 구현 에이전트
-- 주요 변경사항 요약: 확인 다이얼로그 및 단일/전체 플로우 구현(아이콘 분기), App 업데이트
+- 상태: `리팩토링`
+- 마지막 수정 에이전트: 리팩토링 에이전트
+- 주요 변경사항 요약: `getListEvents` 헬퍼 도입으로 중복 제거/Hook 순서 안정화, App 단순화
