@@ -24,9 +24,9 @@
 - Nature: 모든 명령은 문서 산출 전용이며 코드 수정/실행을 지시하지 않음
 
 - Issue 템플릿 작성 범위(중요): PM은 아래 섹션까지만 작성
-  - 목적(Goal), 요구사항(Requirements), 맥락 & 범위(Context & Scope), 요약(Summary)
+  - **목적(Goal), 요구사항(Requirements), 맥락 & 범위(Context & Scope), 요약(Summary)**만 수정가능
   - 요약(Summary)은 다음 필드만 작성: 상태, 마지막 수정 에이전트, 주요 변경사항 요약
-  - 그 외 섹션은 템플릿 원문 그대로 유지하되, 수용 기준(Acceptance Criteria) 섹션은 이슈에서 제외한다. 테스트 관련 섹션은 유지: 테스트 계획 요약(Test Plan Summary), Test Matrix, TDD 사이클, 에이전트 작업 로그, DoR/DoD (원문 변경/주석/커스텀 문구 금지)
+  - 그 외 섹션은 템플릿 원문 그대로 유지.
   - 수용 기준은 작성하지 않으며, 테스트 설계/테스트 코드 단계에서 테스트 시나리오/케이스로 표현한다.
 
 ---

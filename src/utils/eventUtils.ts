@@ -1,12 +1,8 @@
 import { Event } from '../types';
-import { getWeekDates, isDateInRange } from './dateUtils';
+import { getWeekDates } from './dateUtils';
+import { expandEventsWithinWindow } from './recurrence';
 
-function filterEventsByDateRange(events: Event[], start: Date, end: Date): Event[] {
-  return events.filter((event) => {
-    const eventDate = new Date(event.date);
-    return isDateInRange(eventDate, start, end);
-  });
-}
+// legacy helper retained for reference
 
 function containsTerm(target: string, term: string) {
   return target.toLowerCase().includes(term.toLowerCase());
@@ -19,24 +15,7 @@ function searchEvents(events: Event[], term: string) {
   );
 }
 
-function filterEventsByDateRangeAtWeek(events: Event[], currentDate: Date) {
-  const weekDates = getWeekDates(currentDate);
-  return filterEventsByDateRange(events, weekDates[0], weekDates[6]);
-}
-
-function filterEventsByDateRangeAtMonth(events: Event[], currentDate: Date) {
-  const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const monthEnd = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0,
-    23,
-    59,
-    59,
-    999
-  );
-  return filterEventsByDateRange(events, monthStart, monthEnd);
-}
+// kept for potential future use. Currently expansion uses window-based approach
 
 export function getFilteredEvents(
   events: Event[],
@@ -46,13 +25,25 @@ export function getFilteredEvents(
 ): Event[] {
   const searchedEvents = searchEvents(events, searchTerm);
 
+  // Determine window based on view
+  let windowStart: Date;
+  let windowEnd: Date;
   if (view === 'week') {
-    return filterEventsByDateRangeAtWeek(searchedEvents, currentDate);
+    const weekDates = getWeekDates(currentDate);
+    windowStart = weekDates[0];
+    windowEnd = new Date(
+      weekDates[6].getFullYear(),
+      weekDates[6].getMonth(),
+      weekDates[6].getDate(),
+      23,
+      59,
+      59,
+      999
+    );
+  } else {
+    windowStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    windowEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
   }
 
-  if (view === 'month') {
-    return filterEventsByDateRangeAtMonth(searchedEvents, currentDate);
-  }
-
-  return searchedEvents;
+  return expandEventsWithinWindow(searchedEvents, windowStart, windowEnd);
 }

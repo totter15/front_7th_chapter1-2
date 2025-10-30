@@ -77,11 +77,12 @@
 - 린트/타입 검사 후 테스트 전체 실행으로 Green을 확인한다.
 - `/.cursor/checklists/test-code-checklist.md`의 항목을 빠르게 재점검한다.
 
-### ⟳ 테스트 실행/재시도 정책
+### 테스트 실행/재시도 정책
 
-- 테스트 실행은 최대 3회까지 재시도한다.
+- 테스트 실행은 **최대 3회**까지 재시도한다.
 - 3회 모두 실패하면 즉시 작업을 중지하고 실패 원인을 분석/보고한다.
-- 실패 원인이 상태 공유/제어의 부재로 의심되는 경우 `useContext` 도입/적용을 우선 검토한다(최소 변경 원칙 준수).
+- 테스트 실패시 `useContext` 도입/적용을 우선 검토한다(최소 변경 원칙 준수).
+- MUI 오류시 https://jskim1991.medium.com/react-dont-give-up-on-testing-when-using-material-ui-with-react-ff737969eec7 참고한다.
 
 5. 이슈 업데이트
 
