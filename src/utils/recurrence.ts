@@ -23,7 +23,12 @@ export function generateOccurrencesForEvent(
   const repeatType: RepeatType = event.repeat.type as RepeatType;
   const interval = Math.max(1, event.repeat.interval || 1);
   const hasEnd = Boolean(event.repeat.endDate);
-  const repeatEndDate = hasEnd ? parseYMD(event.repeat.endDate as string) : null;
+  const repeatEndDateRaw = hasEnd ? parseYMD(event.repeat.endDate as string) : null;
+  // Cap: end date must not exceed 2025-12-31
+  const capEndDate = new Date(2025, 11, 31);
+  const repeatEndDate = repeatEndDateRaw
+    ? (repeatEndDateRaw > capEndDate ? capEndDate : repeatEndDateRaw)
+    : null;
 
   const maybeInclude = (occurrenceDate: Date) => {
     if (repeatEndDate && occurrenceDate > repeatEndDate) return;

@@ -34,7 +34,7 @@
 1. 요구사항 입력
 
 - 입력: 사용자가 기능/변경 요구를 서술
-- 결과: 오케스트레이터가 다음 단계(PM)로 진행할 준비 상태를 표시
+- 결과: PM 단계 실행
 
 2. PM 단계(@pm.md 활용 → Issue 생성)
 
@@ -42,14 +42,14 @@
 - 템플릿 준수(2-0): `/.cursor/templates/issue-template.md`를 반드시 참고/준수하여 이슈를 생성한다.
 - 검토(2-1): `/.cursor/checklists/pm-checklist.md` 기준으로 자체 점검 요약을 생성하여 사용자에게 공유
 - 요약 갱신(2-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `기획`으로, 마지막 수정 에이전트를 `Issue Writer (PM)`로, 주요 변경 요약을 업데이트
-- 승인(2-2): 사용자에게 다음 단계 진행 여부를 묻고 명시적 허락을 기다림
+- 승인(2-2): 사용자에게 다음 단계 진행 여부를 묻고 명시적 허락을 기다림. 허락할 경우 테스트 설계 단계 실행.
 
 3. 테스트 설계 단계(@test-designer.md 활용)
 
 - 실행: `*design-tests [issue-path]`
 - 검토(3-1): `/.cursor/checklists/test-plan-checklist.md` 기준 요약을 생성하여 사용자에게 공유
 - 요약 갱신(3-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `테스트 설계`로, 마지막 수정 에이전트를 `테스트 설계 에이전트`로, 주요 변경 요약을 업데이트
-- 승인(3-2): 사용자에게 다음 단계 진행 여부를 묻고 허락을 기다림
+- 승인(3-2): 사용자에게 다음 단계 진행 여부를 묻고 허락을 기다림. 허용할 경우 테스트 코드 단계 실행.
 
 4. 테스트 코드 단계(@test-code-developer.md 활용 → RED)
 
@@ -57,7 +57,7 @@
 - 검토(4-1): `/.cursor/checklists/test-code-checklist.md` 기준 점검 요약 후 사용자에게 공유
 - 요약 갱신(4-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `테스트 코드 작성(RED)`로, 마지막 수정 에이전트를 `테스트 코드 에이전트`로, 추가/수정된 테스트 파일 요약을 기록
 - 승인(4-2): 사용자 허락을 요청하고 대기
-- 커밋(4-3): 승인되면 테스트와 이슈를 포함한 **커밋을 생성(구현/리팩토링 코드는 포함하지 않음)**. 커밋 메시지는 `/.cursor/templates/commit-template.md`를 따른다(권장 type: test).
+- 커밋(4-3): 사용자가 허락하면 테스트와 이슈를 포함한 **커밋을 생성(구현/리팩토링 코드는 포함하지 않음)**. 커밋 메시지는 `/.cursor/templates/commit-template.md`를 따른다(권장 type: test). 커밋후 구현 단계 실행.
 
 5. 구현 단계(@implementaion-developer.md 활용 → GREEN)
 
@@ -65,7 +65,7 @@
 - 검토(5-1): `/.cursor/checklists/implementation-checklist.md` 기준 점검 요약 후 사용자에게 공유
 - 요약 갱신(5-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `코드 작성(GREEN)`으로, 마지막 수정 에이전트를 `구현 에이전트`로, 주요 변경 파일/핵심 변경 요약을 업데이트
 - 승인(5-2): 사용자 허락을 요청하고 대기
-- 커밋(5-3): 승인되면 이슈와 구현 변경만 포함한 커밋을 생성. 커밋 메시지는 `/.cursor/templates/commit-template.md`를 따른다(권장 type: feat 또는 fix).
+- 커밋(5-3): 사용자가 허락하면 이슈와 구현 변경만 포함한 커밋을 생성. 커밋 메시지는 `/.cursor/templates/commit-template.md`를 따른다(권장 type: feat 또는 fix). 커밋 후 리팩토링 단계 실행.
 
 6. 리팩토링 단계(@refactoring-developer.md 활용 → REFACTOR)
 
@@ -74,7 +74,7 @@
 - 검토(6-1): `/.cursor/checklists/refactoring-checklist.md` 기준 점검 요약 후 사용자에게 공유
 - 요약 갱신(6-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `리팩토링`으로, 마지막 수정 에이전트를 `리팩토링 에이전트`로, 리팩토링 포인트/전후 비교 요약을 업데이트
 - 승인(6-2): 사용자 허락을 요청하고 대기
-- 커밋(6-3): 승인되면 이슈와 리팩토링 전용 커밋 생성. 커밋 메시지는 `/.cursor/templates/commit-template.md`를 따른다(권장 type: refactor).
+- 커밋(6-3): 사용자가 허락하면 이슈와 리팩토링 전용 커밋 생성. 커밋 메시지는 `/.cursor/templates/commit-template.md`를 따른다(권장 type: refactor).
 
 7. 종료(완료 알림)
 
