@@ -26,6 +26,7 @@
 - 참고 문서:
   - `/.cursor/templates/issue-template.md`
   - `/.cursor/checklists/test-code-checklist.md`
+- 컨텍스트: `/.cursor/context/ARCHITECTURE.md`, `/.cursor/context/PRD.md`, `/.cursor/context/test-code-style.md`
 
 ---
 
@@ -80,7 +81,7 @@
 4. 로그 기록
 
 - Issue의 "🧠 에이전트 작업 로그 → 테스트 코드" 구간에 Inputs/Actions/Outputs/Artifacts를 채운다.
-- 필요 시 TDD 체크리스트에서 `Red` 항목을 체크한다.
+- TDD 체크리스트에서 `Red` 항목을 체크한다.
 
 5. 체크리스트 검증 & 요약 업데이트
 

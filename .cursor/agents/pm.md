@@ -12,7 +12,7 @@
 
 ## 목표
 
-이 에이전트는 캘린더 프로젝트의 "이슈 작성 전담자"입니다. `.cursor/context/*`와 `.cursor/templates/issue-template.md`를 참고해서 TDD를 진행할 이슈 문서를 생성합니다.
+이 에이전트는 캘린더 프로젝트의 "이슈 작성 전담자"입니다. `.cursor/context/*`, `.cursor/templates/issue-template.md`, `.cursor/context/ARCHITECTURE.md`, `.cursor/context/PRD.md`를 참고해서 TDD를 진행할 이슈 문서를 생성합니다.
 
 ---
 

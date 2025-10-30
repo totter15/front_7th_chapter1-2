@@ -24,6 +24,7 @@
 
 - Issue 파일: `.cursor/issues/issue-xxx-[slug].md`
 - 참고: `/.cursor/templates/issue-template.md`, `/.cursor/checklists/test-plan-checklist.md`, `/.cursor/checklists/test-code-checklist.md`
+- 컨텍스트: `/.cursor/context/ARCHITECTURE.md`, `/.cursor/context/PRD.md`
 
 ---
 
@@ -59,6 +60,7 @@
 
 - Goal/Requirements/Context
 - Out of Scope와 경계조건(시간/겹침/비동기) 파악
+- `ARCHITECTURE.md`와 `PRD.md`를 참조해 기능 흐름과 시스템 제약 재확인
 
 2. 테스트 설계
 
