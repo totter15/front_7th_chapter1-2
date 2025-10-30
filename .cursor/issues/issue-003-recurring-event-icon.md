@@ -126,13 +126,15 @@
 - Outputs: 리팩토링 포인트/전후 비교
 - Safeguard: 모든 테스트 Green 유지
   <!-- REFACTORING_START -->
-  (자동 기록)
+  Inputs: GREEN 상태, 중복된 아이콘 렌더링 코드 두 군데(App.tsx)
+  Actions: `RepeatA11yIcon` 헬퍼 컴포넌트 추출로 중복 제거, 가독성 개선
+  Outputs: 동일 동작 유지, 렌더링 중복 제거, 테스트 그린 유지
   <!-- REFACTORING_END -->
 
 ---
 
 ## 🧾 요약 (Summary)
 
-- 상태: `코드 작성`
-- 마지막 수정 에이전트: 구현 에이전트
-- 주요 변경사항 요약: GREEN 단계 - 월/주 뷰에 반복 아이콘 표시 구현 및 접근성 속성 추가
+- 상태: `리팩토링`
+- 마지막 수정 에이전트: 리팩토링 에이전트
+- 주요 변경사항 요약: `RepeatA11yIcon` 추출로 중복 제거(주/월 뷰), 동작 동일

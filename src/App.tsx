@@ -1,4 +1,12 @@
-import { Notifications, ChevronLeft, ChevronRight, Delete, Edit, Close, Repeat } from '@mui/icons-material';
+import {
+  Notifications,
+  ChevronLeft,
+  ChevronRight,
+  Delete,
+  Edit,
+  Close,
+  Repeat,
+} from '@mui/icons-material';
 import {
   Alert,
   AlertTitle,
@@ -47,6 +55,12 @@ import {
 } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
+
+const RepeatA11yIcon = () => (
+  <span aria-label="반복 일정" title="반복 일정">
+    <Repeat fontSize="small" />
+  </span>
+);
 
 const categories = ['업무', '개인', '가족', '기타'];
 
@@ -200,11 +214,7 @@ function App() {
                             }}
                           >
                             <Stack direction="row" spacing={1} alignItems="center">
-                              {event.repeat.type !== 'none' && (
-                                <span aria-label="반복 일정" title="반복 일정">
-                                  <Repeat fontSize="small" />
-                                </span>
-                              )}
+                              {event.repeat.type !== 'none' && <RepeatA11yIcon />}
                               {isNotified && <Notifications fontSize="small" />}
                               <Typography
                                 variant="caption"
@@ -292,11 +302,7 @@ function App() {
                                   }}
                                 >
                                   <Stack direction="row" spacing={1} alignItems="center">
-                                    {event.repeat.type !== 'none' && (
-                                      <span aria-label="반복 일정" title="반복 일정">
-                                        <Repeat fontSize="small" />
-                                      </span>
-                                    )}
+                                    {event.repeat.type !== 'none' && <RepeatA11yIcon />}
                                     {isNotified && <Notifications fontSize="small" />}
                                     <Typography
                                       variant="caption"
