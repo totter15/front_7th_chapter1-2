@@ -109,7 +109,7 @@ function App() {
     editEvent,
   } = useEventForm();
 
-  const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
+  const { events, saveEvent, deleteEvent, deleteRecurringSeries } = useEventOperations(Boolean(editingEvent), () =>
     setEditingEvent(null)
   );
 
@@ -122,6 +122,9 @@ function App() {
   const [recurringEditTarget, setRecurringEditTarget] = useState<Event | null>(null);
   const [isRecurringEditDialogOpen, setIsRecurringEditDialogOpen] = useState(false);
   const [singleEditedBaseIds, setSingleEditedBaseIds] = useState<Set<string>>(new Set());
+  const [recurringDeleteTarget, setRecurringDeleteTarget] = useState<Event | null>(null);
+  const [isRecurringDeleteDialogOpen, setIsRecurringDeleteDialogOpen] = useState(false);
+  const [singleDeletedOccurrences, setSingleDeletedOccurrences] = useState<Set<string>>(new Set());
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -165,6 +168,15 @@ function App() {
     }
   };
 
+  const visibleEvents = useMemo(() => {
+    const filtered = filteredEvents.filter((e) => {
+      const baseId = (typeof e.id === 'string' ? e.id : '').split('-')[0];
+      const key = `${baseId}-${e.date}`;
+      return !singleDeletedOccurrences.has(key);
+    });
+    return filtered;
+  }, [filteredEvents, singleDeletedOccurrences]);
+
   const renderWeekView = () => {
     const weekDates = getWeekDates(currentDate);
     return (
@@ -198,7 +210,7 @@ function App() {
                     <Typography variant="body2" fontWeight="bold">
                       {date.getDate()}
                     </Typography>
-                    {filteredEvents
+                    {visibleEvents
                       .filter(
                         (event) => new Date(event.date).toDateString() === date.toDateString()
                       )
@@ -293,7 +305,7 @@ function App() {
                                 {holiday}
                               </Typography>
                             )}
-                            {getEventsForDay(filteredEvents, day).map((event) => {
+                            {getEventsForDay(visibleEvents, day).map((event) => {
                               const isNotified = notifiedEvents.includes(event.id);
                               return (
                                 <Box
@@ -568,7 +580,7 @@ function App() {
             />
           </FormControl>
 
-          {filteredEvents.length === 0 ? (
+          {visibleEvents.length === 0 ? (
             <Typography>검색 결과가 없습니다.</Typography>
           ) : (
             listEvents.map((event) => (
@@ -628,7 +640,17 @@ function App() {
                     >
                       <Edit />
                     </IconButton>
-                    <IconButton aria-label="Delete event" onClick={() => deleteEvent(event.id)}>
+                    <IconButton
+                      aria-label="Delete event"
+                      onClick={() => {
+                        if (event.repeat.type !== 'none') {
+                          setRecurringDeleteTarget(event);
+                          setIsRecurringDeleteDialogOpen(true);
+                        } else {
+                          deleteEvent(event.id);
+                        }
+                      }}
+                    >
                       <Delete />
                     </IconButton>
                   </Stack>
@@ -710,6 +732,44 @@ function App() {
               // Series edit (No): for now just close; icon remains due to repeat staying
               setIsRecurringEditDialogOpen(false);
               setRecurringEditTarget(null);
+            }}
+          >
+            아니오
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isRecurringDeleteDialogOpen} onClose={() => setIsRecurringDeleteDialogOpen(false)}>
+        <DialogTitle>반복 일정 삭제</DialogTitle>
+        <DialogContent>
+          <DialogContentText>해당 일정만 삭제하시겠어요?</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              if (!recurringDeleteTarget) {
+                setIsRecurringDeleteDialogOpen(false);
+                return;
+              }
+              const baseId = recurringDeleteTarget.id.split('-')[0];
+              const key = `${baseId}-${recurringDeleteTarget.date}`;
+              setSingleDeletedOccurrences((prev) => new Set(prev).add(key));
+              setIsRecurringDeleteDialogOpen(false);
+              setRecurringDeleteTarget(null);
+            }}
+          >
+            예
+          </Button>
+          <Button
+            onClick={async () => {
+              if (!recurringDeleteTarget) {
+                setIsRecurringDeleteDialogOpen(false);
+                return;
+              }
+              const baseId = recurringDeleteTarget.id.split('-')[0];
+              await deleteRecurringSeries(baseId);
+              setIsRecurringDeleteDialogOpen(false);
+              setRecurringDeleteTarget(null);
             }}
           >
             아니오
