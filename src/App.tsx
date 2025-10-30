@@ -127,12 +127,17 @@ function App() {
   const listEvents = useMemo(() => {
     const seen = new Set<string>();
     const results: Event[] = [];
-    for (const e of filteredEvents) {
-      const baseId = e.id.split('-')[0];
+    for (const e of filteredEvents as any[]) {
+      const idStr = typeof e?.id === 'string' ? (e.id as string) : '';
+      if (!idStr) {
+        results.push(e as Event);
+        continue;
+      }
+      const baseId = idStr.split('-')[0];
       if (seen.has(baseId)) continue;
       seen.add(baseId);
       const original = events.find((ev) => ev.id === baseId);
-      results.push(original ?? e);
+      results.push(original ?? (e as Event));
     }
     return results;
   }, [filteredEvents, events]);
@@ -601,17 +606,18 @@ function App() {
                     <Typography>{event.description}</Typography>
                     <Typography>{event.location}</Typography>
                     <Typography>카테고리: {event.category}</Typography>
-                    {event.repeat.type !== 'none' && !singleEditedBaseIds.has(event.id.split('-')[0]) && (
-                      <Typography>
-                        반복: {event.repeat.interval}
-                        {event.repeat.type === 'daily' && '일'}
-                        {event.repeat.type === 'weekly' && '주'}
-                        {event.repeat.type === 'monthly' && '월'}
-                        {event.repeat.type === 'yearly' && '년'}
-                        마다
-                        {event.repeat.endDate && ` (종료: ${event.repeat.endDate})`}
-                      </Typography>
-                    )}
+                    {event.repeat.type !== 'none' &&
+                      !singleEditedBaseIds.has(event.id.split('-')[0]) && (
+                        <Typography>
+                          반복: {event.repeat.interval}
+                          {event.repeat.type === 'daily' && '일'}
+                          {event.repeat.type === 'weekly' && '주'}
+                          {event.repeat.type === 'monthly' && '월'}
+                          {event.repeat.type === 'yearly' && '년'}
+                          마다
+                          {event.repeat.endDate && ` (종료: ${event.repeat.endDate})`}
+                        </Typography>
+                      )}
                     <Typography>
                       알림:{' '}
                       {
@@ -694,7 +700,8 @@ function App() {
         <DialogTitle>해당 일정만 수정하시겠어요?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            예를 선택하면 해당 인스턴스만 단일 일정으로 전환됩니다. 아니오를 선택하면 전체 반복 일정이 유지됩니다.
+            예를 선택하면 해당 인스턴스만 단일 일정으로 전환됩니다. 아니오를 선택하면 전체 반복
+            일정이 유지됩니다.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
