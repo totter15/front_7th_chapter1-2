@@ -235,9 +235,7 @@ function App() {
                           >
                             <Stack direction="row" spacing={1} alignItems="center">
                               {event.repeat.type !== 'none' &&
-                                !singleEditedBaseIds.has(getBaseId(event.id)) && (
-                                  <RepeatA11yIcon />
-                                )}
+                                !singleEditedBaseIds.has(getBaseId(event.id)) && <RepeatA11yIcon />}
                               {isNotified && <Notifications fontSize="small" />}
                               <Typography
                                 variant="caption"
