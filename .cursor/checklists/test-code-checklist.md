@@ -1,5 +1,7 @@
 # Test Code Checklist
 
+- [ ] issue 문서의 모든 테스트 케이스의 테스트가 작성했는가?
+
 - [ ] 사용자의 실제 행동과 화면 변화를 중심으로 테스트를 설계했는가?
 
 - [ ] 내부 구현(data-testid, container.querySelector)이 아닌 접근을 사용했는가?
