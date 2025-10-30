@@ -116,7 +116,7 @@
   Actions:
   - event list 중복 제거 로직을 `utils/eventList.ts`로 추출(`getListEvents`)
   - App에서 헬퍼 사용으로 Hook 순서/가독성 개선
-  Outputs:
+    Outputs:
   - Added: `src/utils/eventList.ts`
   - Updated: `src/App.tsx`
   <!-- REFACTORING_END -->
@@ -125,6 +125,10 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `리팩토링`
-- 마지막 수정 에이전트: 리팩토링 에이전트
-- 주요 변경사항 요약: `getListEvents` 헬퍼 도입으로 중복 제거/Hook 순서 안정화, App 단순화
+- 상태: `완료`
+- 마지막 수정 에이전트: 오케스트레이터
+- 주요 변경사항 요약: RED→GREEN→REFACTOR 완료. 커밋 요약 —
+  - test(issue-006): add RED tests for recurring edit (single vs series)
+  - feat(issue-006): add confirm dialog for recurring edits and icon behavior
+  - fix(issue-006): guard event id in list dedupe and stabilize search tests
+  - refactor(issue-006): extract listEvents helper and clean imports
