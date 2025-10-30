@@ -36,7 +36,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
@@ -118,8 +118,24 @@ function App() {
 
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
+  const [recurringEditTarget, setRecurringEditTarget] = useState<Event | null>(null);
+  const [isRecurringEditDialogOpen, setIsRecurringEditDialogOpen] = useState(false);
+  const [singleEditedBaseIds, setSingleEditedBaseIds] = useState<Set<string>>(new Set());
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const listEvents = useMemo(() => {
+    const seen = new Set<string>();
+    const results: Event[] = [];
+    for (const e of filteredEvents) {
+      const baseId = e.id.split('-')[0];
+      if (seen.has(baseId)) continue;
+      seen.add(baseId);
+      const original = events.find((ev) => ev.id === baseId);
+      results.push(original ?? e);
+    }
+    return results;
+  }, [filteredEvents, events]);
 
   const addOrUpdateEvent = async () => {
     if (!title || !date || !startTime || !endTime) {
@@ -214,7 +230,10 @@ function App() {
                             }}
                           >
                             <Stack direction="row" spacing={1} alignItems="center">
-                              {event.repeat.type !== 'none' && <RepeatA11yIcon />}
+                              {event.repeat.type !== 'none' &&
+                                !singleEditedBaseIds.has(event.id.split('-')[0]) && (
+                                  <RepeatA11yIcon />
+                                )}
                               {isNotified && <Notifications fontSize="small" />}
                               <Typography
                                 variant="caption"
@@ -302,7 +321,10 @@ function App() {
                                   }}
                                 >
                                   <Stack direction="row" spacing={1} alignItems="center">
-                                    {event.repeat.type !== 'none' && <RepeatA11yIcon />}
+                                    {event.repeat.type !== 'none' &&
+                                      !singleEditedBaseIds.has(event.id.split('-')[0]) && (
+                                        <RepeatA11yIcon />
+                                      )}
                                     {isNotified && <Notifications fontSize="small" />}
                                     <Typography
                                       variant="caption"
@@ -559,7 +581,7 @@ function App() {
           {filteredEvents.length === 0 ? (
             <Typography>검색 결과가 없습니다.</Typography>
           ) : (
-            filteredEvents.map((event) => (
+            listEvents.map((event) => (
               <Box key={event.id} sx={{ border: 1, borderRadius: 2, p: 3, width: '100%' }}>
                 <Stack direction="row" justifyContent="space-between">
                   <Stack>
@@ -579,7 +601,7 @@ function App() {
                     <Typography>{event.description}</Typography>
                     <Typography>{event.location}</Typography>
                     <Typography>카테고리: {event.category}</Typography>
-                    {event.repeat.type !== 'none' && (
+                    {event.repeat.type !== 'none' && !singleEditedBaseIds.has(event.id.split('-')[0]) && (
                       <Typography>
                         반복: {event.repeat.interval}
                         {event.repeat.type === 'daily' && '일'}
@@ -600,7 +622,19 @@ function App() {
                     </Typography>
                   </Stack>
                   <Stack>
-                    <IconButton aria-label="Edit event" onClick={() => editEvent(event)}>
+                    <IconButton
+                      aria-label="Edit event"
+                      onClick={() => {
+                        // If recurring, ask single vs series; else direct edit
+                        if (event.repeat.type !== 'none') {
+                          setEditingEvent(event);
+                          setRecurringEditTarget(event);
+                          setIsRecurringEditDialogOpen(true);
+                        } else {
+                          editEvent(event);
+                        }
+                      }}
+                    >
                       <Edit />
                     </IconButton>
                     <IconButton aria-label="Delete event" onClick={() => deleteEvent(event.id)}>
@@ -652,6 +686,41 @@ function App() {
             }}
           >
             계속 진행
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isRecurringEditDialogOpen} onClose={() => setIsRecurringEditDialogOpen(false)}>
+        <DialogTitle>해당 일정만 수정하시겠어요?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            예를 선택하면 해당 인스턴스만 단일 일정으로 전환됩니다. 아니오를 선택하면 전체 반복 일정이 유지됩니다.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={async () => {
+              if (!recurringEditTarget) {
+                setIsRecurringEditDialogOpen(false);
+                return;
+              }
+              // Single edit: locally mark base id as single-edited (icon 제거)
+              const baseId = recurringEditTarget.id.split('-')[0];
+              setSingleEditedBaseIds((prev) => new Set(prev).add(baseId));
+              setIsRecurringEditDialogOpen(false);
+              setRecurringEditTarget(null);
+            }}
+          >
+            예
+          </Button>
+          <Button
+            onClick={() => {
+              // Series edit (No): for now just close; icon remains due to repeat staying
+              setIsRecurringEditDialogOpen(false);
+              setRecurringEditTarget(null);
+            }}
+          >
+            아니오
           </Button>
         </DialogActions>
       </Dialog>
