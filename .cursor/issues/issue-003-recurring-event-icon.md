@@ -135,6 +135,13 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `리팩토링`
-- 마지막 수정 에이전트: 리팩토링 에이전트
-- 주요 변경사항 요약: `RepeatA11yIcon` 추출로 중복 제거(주/월 뷰), 동작 동일
+- 상태: `완료`
+- 마지막 수정 에이전트: 오케스트레이터
+- 주요 변경사항 요약:
+  - RED: 통합 테스트 추가 — `src/__tests__/integration/recurring-icon.integration.spec.tsx`
+  - GREEN: `App.tsx`에 반복 아이콘(a11y 포함) 표시 구현
+  - REFACTOR: `RepeatA11yIcon` 추출로 중복 제거
+  - 커밋 요약:
+    - test(recurring-icon): add failing integration tests for recurring event icon and update issue logs
+    - feat(recurring-icon): show repeat icon with a11y in week/month calendar views
+    - refactor(recurring-icon): extract RepeatA11yIcon to remove duplication and improve readability
