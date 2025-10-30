@@ -47,7 +47,7 @@
 3. 테스트 설계 단계(@test-designer.md 활용)
 
 - 실행: `*design-tests [issue-path]`
-- 검토(3-1): `/.cursor/checklists/test-code-checklist.md`(및 존재 시 `test-plan-checklist.md`) 기준 요약을 생성하여 사용자에게 공유
+- 검토(3-1): `/.cursor/checklists/test-plan-checklist.md` 기준 요약을 생성하여 사용자에게 공유
 - 요약 갱신(3-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `테스트 설계`로, 마지막 수정 에이전트를 `테스트 설계 에이전트`로, 주요 변경 요약을 업데이트
 - 승인(3-2): 사용자에게 다음 단계 진행 여부를 묻고 허락을 기다림
 
