@@ -39,6 +39,7 @@
 2. PM 단계(@pm.md 활용 → Issue 생성)
 
 - 실행: `*create-issue [feature]`
+- 템플릿 준수(2-0): `/.cursor/templates/issue-template.md`를 반드시 참고/준수하여 이슈를 생성한다. 템플릿의 주요 섹션(목적/요구사항/맥락&범위/테스트 계획 요약/TDD 사이클/에이전트 작업 로그/요약)을 채우지 않으면 다음 단계로 진행하지 않는다.
 - 검토(2-1): `/.cursor/checklists/pm-checklist.md` 기준으로 자체 점검 요약을 생성하여 사용자에게 공유
 - 요약 갱신(2-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `기획`으로, 마지막 수정 에이전트를 `Issue Writer (PM)`로, 주요 변경 요약을 업데이트
 - 승인(2-2): 사용자에게 다음 단계 진행 여부를 묻고 명시적 허락을 기다림
@@ -88,6 +89,7 @@
 
 - `*kickoff [feature]`
   - PM 에이전트의 `*create-issue`를 호출해 이슈 생성
+  - 생성 시 `/.cursor/templates/issue-template.md` 기반으로 이슈 본문을 스캐폴딩한다(필수)
 - `*design-tests [issue-path]`
   - 테스트 설계 에이전트의 설계/문서 업데이트 실행
 - `*scaffold-tests [issue-path]`
@@ -111,6 +113,7 @@
 - 섹션 경계 준수: 각 에이전트는 허용된 문서 영역만 수정
 - Traceability: 모든 단계는 링크/경로를 남기고, 로그 앵커에 기록
 - 승인 게이트 준수: 매 단계 사용자 허락 없이는 다음 단계로 진행 금지
+- 이슈 템플릿 준수: PM 단계에서 생성되는 모든 이슈는 `/.cursor/templates/issue-template.md`를 기반으로 해야 하며, 필수 섹션 누락 시 보완 전까지 진행 금지
 - 실패 시 재시도: 이전 단계로 롤백하여 수정 후 재실행
 - 요약 갱신 규칙: 각 단계 종료 시 Issue의 "🧾 요약 (Summary)" 섹션을 반드시 갱신한다(상태/마지막 수정 에이전트/주요 변경사항 요약). 중복 Summary 섹션이 있을 경우 모두 동일하게 반영한다.
 
@@ -120,6 +123,7 @@
 
 - 승인 게이트: PM → 테스트 설계 → 테스트 코드(RED) → 구현(GREEN) → 리팩토링 순으로 매 단계 종료 후 사용자 승인 필요
 - 체크리스트: 단계별 전용 체크리스트로 결과를 요약해 승인 판단 자료로 제공
+- PM 승인 기준: 이슈가 `/.cursor/templates/issue-template.md` 섹션 구조를 충족하고, 요구사항이 검증 가능 문장으로 작성되어야 함
 - 커밋 분리: 테스트/구현/리팩토링은 반드시 별도 커밋으로 분리하여 이력 가독성 보장
 - 커밋 메시지: `/.cursor/templates/commit-template.md` 형식(type/scope/요약) 준수. 단계별 권장 type — RED: test, GREEN: feat|fix, REFACTOR: refactor
 - 로그 기록: 각 단계의 **Inputs/Actions/Outputs/Artifacts를 해당 에이전트 로그 앵커에 남긴다**

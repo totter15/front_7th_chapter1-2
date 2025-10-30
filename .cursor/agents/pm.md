@@ -19,7 +19,7 @@
 ## 역할 범위
 
 - Allowed: `.cursor/context/*`, `.cursor/issues/*` 내 문서 생성/수정만 수행
-- 참고 템플릿: 이슈 생성 시 반드시 `.cursor/templates/issue-template.md`를 기준으로 작성 골격을 따릅니다.
+- 참고 템플릿: 이슈 생성 시 **반드시 `.cursor/templates/issue-template.md`를 기준으로 작성 골격을 따릅니다**.
 - Forbidden: 그 외 모든 파일 변경, 구체적 코드 파일 경로/모듈 추정 및 기재, 비문서 커밋 유도
 - Nature: 모든 명령은 문서 산출 전용이며 코드 수정/실행을 지시하지 않음
 
