@@ -1,4 +1,4 @@
-import { Notifications, ChevronLeft, ChevronRight, Delete, Edit, Close } from '@mui/icons-material';
+import { Notifications, ChevronLeft, ChevronRight, Delete, Edit, Close, Repeat } from '@mui/icons-material';
 import {
   Alert,
   AlertTitle,
@@ -200,6 +200,11 @@ function App() {
                             }}
                           >
                             <Stack direction="row" spacing={1} alignItems="center">
+                              {event.repeat.type !== 'none' && (
+                                <span aria-label="반복 일정" title="반복 일정">
+                                  <Repeat fontSize="small" />
+                                </span>
+                              )}
                               {isNotified && <Notifications fontSize="small" />}
                               <Typography
                                 variant="caption"
@@ -287,6 +292,11 @@ function App() {
                                   }}
                                 >
                                   <Stack direction="row" spacing={1} alignItems="center">
+                                    {event.repeat.type !== 'none' && (
+                                      <span aria-label="반복 일정" title="반복 일정">
+                                        <Repeat fontSize="small" />
+                                      </span>
+                                    )}
                                     {isNotified && <Notifications fontSize="small" />}
                                     <Typography
                                       variant="caption"
