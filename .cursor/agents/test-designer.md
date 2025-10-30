@@ -23,8 +23,9 @@
 ## 📥 입력
 
 - Issue 파일: `.cursor/issues/issue-xxx-[slug].md`
-- 참고: `/.cursor/templates/issue-template.md`, `/.cursor/checklists/test-plan-checklist.md`, `/.cursor/checklists/test-code-checklist.md`
+- 참고: `/.cursor/templates/issue-template.md`, `/.cursor/checklists/test-plan-checklist.md`
 - 컨텍스트: `/.cursor/context/ARCHITECTURE.md`, `/.cursor/context/PRD.md`
+- 이것 외의 파일은 참고 금지.
 
 ---
 
@@ -66,7 +67,7 @@
 
 - 유형: Unit / Hook / Integration (E2E 제외)
 - 파일 배치: unit, hooks, integration 디렉터리
-- 테스트 코드 체크리스트 준수: `/.cursor/checklists/test-code-checklist.md`
+- 테스트 설계 체크리스트 준수: `/.cursor/checklists/test-plan-checklist.md`
 
 3. 계획 수립 & 이슈 업데이트
 
