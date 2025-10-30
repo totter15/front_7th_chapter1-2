@@ -107,7 +107,7 @@
   Actions:
   - recurrence: 종료일 상한 보정 로직 함수화(`getCappedEndDate`) 및 상수(`CAP_END_DATE`) 도입
   - 목적: 중복 제거/의도 명확화
-  Outputs:
+    Outputs:
   - Updated: `src/utils/recurrence.ts`
   <!-- REFACTORING_END -->
 
@@ -115,6 +115,9 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `리팩토링`
-- 마지막 수정 에이전트: 리팩토링 에이전트
-- 주요 변경사항 요약: 상한 보정 로직 함수 추출 및 상수화(CAP_END_DATE), 가독성 개선
+- 상태: `완료`
+- 마지막 수정 에이전트: 오케스트레이터
+- 주요 변경사항 요약: RED→GREEN→REFACTOR 완료. 커밋 요약 —
+  - test(issue-005): add RED tests for repeat end until date (cap 2025-12-31)
+  - feat(issue-005): enforce repeat end-date cap at 2025-12-31 (inclusive)
+  - refactor(issue-005): extract end-date cap logic and constant
