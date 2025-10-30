@@ -39,7 +39,6 @@
 2. PM 단계(@pm.md 활용 → Issue 생성)
 
 - 실행: `*create-issue [feature]`
-- 산출: `.cursor/issues/issue-xxx-[slug].md` 생성, Goal/Requirements/Context & Scope 채움(AC 틀은 유지)
 - 검토(2-1): `/.cursor/checklists/pm-checklist.md` 기준으로 자체 점검 요약을 생성하여 사용자에게 공유
 - 요약 갱신(2-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `기획`으로, 마지막 수정 에이전트를 `Issue Writer (PM)`로, 주요 변경 요약을 업데이트
 - 승인(2-2): 사용자에게 다음 단계 진행 여부를 묻고 명시적 허락을 기다림
@@ -47,7 +46,6 @@
 3. 테스트 설계 단계(@test-designer.md 활용)
 
 - 실행: `*design-tests [issue-path]`
-- 산출: Issue의 Test Plan Summary/시나리오/케이스/매트릭스 작성 및 로그 기록(필요 시 `/.cursor/specs/test-plan-[slug].md` 생성 가능)
 - 검토(3-1): `/.cursor/checklists/test-code-checklist.md`(및 존재 시 `test-plan-checklist.md`) 기준 요약을 생성하여 사용자에게 공유
 - 요약 갱신(3-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `테스트 설계`로, 마지막 수정 에이전트를 `테스트 설계 에이전트`로, 주요 변경 요약을 업데이트
 - 승인(3-2): 사용자에게 다음 단계 진행 여부를 묻고 허락을 기다림
@@ -55,7 +53,6 @@
 4. 테스트 코드 단계(@test-code-developer.md 활용 → RED)
 
 - 실행: `*scaffold-tests [issue-path]`
-- 산출: 실패하는 테스트(RED) 작성, 대상: `src/__tests__/unit|hooks|integration/*` + 작업 로그 기록
 - 검토(4-1): `/.cursor/checklists/test-code-checklist.md` 기준 점검 요약 후 사용자에게 공유
 - 요약 갱신(4-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `테스트 코드 작성(RED)`로, 마지막 수정 에이전트를 `테스트 코드 에이전트`로, 추가/수정된 테스트 파일 요약을 기록
 - 승인(4-2): 사용자 허락을 요청하고 대기
@@ -64,7 +61,6 @@
 5. 구현 단계(@implementaion-developer.md 활용 → GREEN)
 
 - 실행: `*run-green [issue-path]`
-- 산출: 신규 테스트를 통과시키는 최소 구현(Green), 변경 파일/핵심 변경 요약 + 로그 기록
 - 검토(5-1): `/.cursor/checklists/implementation-checklist.md` 기준 점검 요약 후 사용자에게 공유
 - 요약 갱신(5-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `코드 작성(GREEN)`으로, 마지막 수정 에이전트를 `구현 에이전트`로, 주요 변경 파일/핵심 변경 요약을 업데이트
 - 승인(5-2): 사용자 허락을 요청하고 대기
@@ -74,7 +70,6 @@
 
 - 실행: `*refactor [issue-path]`
 - 전제: 모든 관련 테스트 Green 유지
-- 산출: 동작 불변 리팩토링, 변경 범위/근거/영향/파일 목록 + 로그 기록
 - 검토(6-1): `/.cursor/checklists/refactoring-checklist.md` 기준 점검 요약 후 사용자에게 공유
 - 요약 갱신(6-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `리팩토링`으로, 마지막 수정 에이전트를 `리팩토링 에이전트`로, 리팩토링 포인트/전후 비교 요약을 업데이트
 - 승인(6-2): 사용자 허락을 요청하고 대기
@@ -83,19 +78,9 @@
 7. 종료(완료 알림)
 
 - 실행: `*close [issue-path]`
-- 검증: DoR/DoD, Lint/Type 0, Build OK, 커버리지(목표치) 확인
+- 검증: Lint/Type 0
 - 요약 갱신(7-1): Issue의 "🧾 요약 (Summary)"에 상태를 `완료`로, 마지막 수정 에이전트를 `오케스트레이터`로, 최종 산출물/커밋 요약을 업데이트
 - 결과: 완료 메시지와 최종 산출물 경로/커밋 요약 출력
-
----
-
-## 🤝 에이전트 책임 요약
-
-- PM: 이슈 초안(Goal/Req/Context) 작성, 범위 명확화
-- 테스트 설계: AC ↔ Test 매핑, Test Plan, Matrix/케이스 표 작성
-- 테스트 코드: 실패 테스트 작성, 스캐폴딩/모킹
-- 구현: Green 달성, 변경 요약 문서화
-- 리팩토링: 구조 개선, 네이밍/중복 제거, 테스트 Green 유지
 
 ---
 
@@ -117,7 +102,7 @@
 - `*close [issue-path]`
   - 체크리스트 기준 통과 시 완료 처리
 
-주의: 각 단계 종료 시 오케스트레이터는 체크리스트 요약을 제시하고 "다음 단계로 진행할까요?"를 질문한 뒤, 사용자 승인 전에는 다음 단계로 진행하지 않는다. 승인 후 관련 변경만을 포함한 원자적 커밋을 수행하며, 커밋 메시지는 `/.cursor/templates/commit-template.md`를 따른다.
+주의: 각 단계 시작시 어떤 에이전트를 사용하는지 명시한다. 각 단계 종료 시 오케스트레이터는 체크리스트 요약을 제시하고 "다음 단계로 진행할까요?"를 질문한 뒤, 사용자 승인 전에는 다음 단계로 진행하지 않는다. 승인 후 관련 변경만을 포함한 원자적 커밋을 수행하며, 커밋 메시지는 `/.cursor/templates/commit-template.md`를 따른다.
 
 ---
 
@@ -137,15 +122,5 @@
 - 체크리스트: 단계별 전용 체크리스트로 결과를 요약해 승인 판단 자료로 제공
 - 커밋 분리: 테스트/구현/리팩토링은 반드시 별도 커밋으로 분리하여 이력 가독성 보장
 - 커밋 메시지: `/.cursor/templates/commit-template.md` 형식(type/scope/요약) 준수. 단계별 권장 type — RED: test, GREEN: feat|fix, REFACTOR: refactor
-- 로그 기록: 각 단계의 Inputs/Actions/Outputs/Artifacts를 해당 에이전트 로그 앵커에 남긴다
-- 상태 동기화: 승인 직전/직후에 Issue의 "🧾 요약 (Summary)" 상태를 최신으로 동기화한다.
-
----
-
-## ✅ 최소 합격 기준(각 단계 완료 조건 요약)
-
-- PM: Goal/Req/Context 채움, Summary 상태 `기획` 반영
-- 테스트 설계: Test Plan 문서 생성, Test Matrix/절차형 Test Cases 표 갱신, Summary 상태 `테스트 설계` 반영
-- 테스트 코드: 신규 테스트 실패 확인(RED), 커밋 링크 기록, Summary 상태 `테스트 코드 작성(RED)` 반영
-- 구현: 모든 신규 테스트 Green, Lint/Type 0, Build OK, Summary 상태 `코드 작성(GREEN)` 반영
-- 리팩토링: 테스트 Green 유지, 변경 요약 기록, Summary 상태 `리팩토링` 반영
+- 로그 기록: 각 단계의 **Inputs/Actions/Outputs/Artifacts를 해당 에이전트 로그 앵커에 남긴다**
+- 상태 동기화: 승인 직전/직후에 **Issue의 "🧾 요약 (Summary)" 상태를 최신으로 동기화**한다.
