@@ -39,7 +39,7 @@
 2. PM 단계(@pm.md 활용 → Issue 생성)
 
 - 실행: `*create-issue [feature]`
-- 템플릿 준수(2-0): `/.cursor/templates/issue-template.md`를 반드시 참고/준수하여 이슈를 생성한다. 템플릿의 주요 섹션(목적/요구사항/맥락&범위/테스트 계획 요약/TDD 사이클/에이전트 작업 로그/요약)을 채우지 않으면 다음 단계로 진행하지 않는다.
+- 템플릿 준수(2-0): `/.cursor/templates/issue-template.md`를 반드시 참고/준수하여 이슈를 생성한다.
 - 검토(2-1): `/.cursor/checklists/pm-checklist.md` 기준으로 자체 점검 요약을 생성하여 사용자에게 공유
 - 요약 갱신(2-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `기획`으로, 마지막 수정 에이전트를 `Issue Writer (PM)`로, 주요 변경 요약을 업데이트
 - 승인(2-2): 사용자에게 다음 단계 진행 여부를 묻고 명시적 허락을 기다림
