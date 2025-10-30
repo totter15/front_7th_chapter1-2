@@ -36,8 +36,8 @@ describe('반복 유형 선택 UI', () => {
     const checkbox = screen.getByLabelText('반복 일정');
     await user.click(checkbox);
 
-    expect(screen.getByText('반복 유형')).toBeInTheDocument();
-    expect(screen.getByText('반복 간격')).toBeInTheDocument();
-    expect(screen.getByText('반복 종료일')).toBeInTheDocument();
+    expect(await screen.findByText('반복 유형')).toBeInTheDocument();
+    expect(await screen.findByText('반복 간격')).toBeInTheDocument();
+    expect(await screen.findByText('반복 종료일')).toBeInTheDocument();
   });
 });

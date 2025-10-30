@@ -50,7 +50,7 @@ describe('반복 생성 규칙 (TC-02~TC-06)', () => {
     await user.click(screen.getByRole('option', { name: 'week-option' }));
 
     const weekView = screen.getByTestId('week-view');
-    // 기대: 10/11/12일 모두에 동일 이벤트가 보임 (현재는 확장 로직이 없어 실패 예정)
+    // 이번 주: 10,11 확인
     expect(within(weekView).getByText('10').closest('td')).toBeTruthy();
     expect(
       within(within(weekView).getByText('10').closest('td')!).getByText('매일 일정')
@@ -58,8 +58,12 @@ describe('반복 생성 규칙 (TC-02~TC-06)', () => {
     expect(
       within(within(weekView).getByText('11').closest('td')!).getByText('매일 일정')
     ).toBeInTheDocument();
+
+    // 다음 주로 이동하여 12 확인
+    await user.click(screen.getByLabelText('Next'));
+    const weekView2 = screen.getByTestId('week-view');
     expect(
-      within(within(weekView).getByText('12').closest('td')!).getByText('매일 일정')
+      within(within(weekView2).getByText('12').closest('td')!).getByText('매일 일정')
     ).toBeInTheDocument();
   });
 
