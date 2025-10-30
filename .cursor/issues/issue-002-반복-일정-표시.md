@@ -177,7 +177,27 @@
 - Outputs: 리팩토링 포인트/전후 비교
 - Safeguard: 모든 테스트 Green 유지
   <!-- REFACTORING_START -->
-  (자동 기록)
+
+  Inputs:
+
+  - Green 상태의 구현 (`src/App.tsx`)
+  - 월/주 뷰 모두에서 반복 아이콘 마크업이 중복되어 존재
+
+  Actions:
+
+  - 반복 여부 판단 로직 추출: `isRecurringEvent(event)` 헬퍼 추가
+  - 아이콘 마크업 추출: `RecurringIcon` 컴포넌트 추가(접근성 라벨/테스트 ID 유지)
+  - 월/주 뷰에서 중복 마크업을 헬퍼/컴포넌트로 대체(동작/레이아웃 동일)
+  - 린트 확인: 신규 오류 없음
+
+  Outputs:
+
+  - 중복 제거 및 가독성 향상, 접근성/테스트 안정성 유지
+  - 행위 불변(표시 조건/속성 동일)
+
+  Artifacts:
+
+  - 변경 파일: `src/App.tsx`
   <!-- REFACTORING_END -->
 
 ---
