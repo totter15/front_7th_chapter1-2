@@ -18,5 +18,3 @@ export function getListEvents(filteredEvents: Event[], allEvents: Event[]): Even
   }
   return results;
 }
-
-

@@ -7,5 +7,3 @@ export function getBaseId(occurrenceId: string): string {
 export function getOccurrenceKeyFromParts(baseId: string, date: string): string {
   return `${baseId}-${date}`;
 }
-
-

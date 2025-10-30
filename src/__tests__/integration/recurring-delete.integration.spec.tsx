@@ -104,5 +104,3 @@ describe('반복 일정 삭제 (단일 vs 전체)', () => {
     expect(within(eventList).queryByText('반복 세미나')).toBeNull();
   });
 });
-
-
