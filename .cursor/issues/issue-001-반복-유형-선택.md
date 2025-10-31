@@ -110,7 +110,7 @@
 
 - [x] Red: 실패하는 테스트 추가 (Test Code Agent)
 - [x] Green: 최소 구현으로 통과 (Implementation Agent)
-- [ ] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
+- [x] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
 
 ---
 
@@ -199,13 +199,21 @@
 - Outputs: 리팩토링 포인트/전후 비교
 - Safeguard: 모든 테스트 Green 유지
   <!-- REFACTORING_START -->
-  (자동 기록)
+  - Inputs: Green 상태 코드, 리팩토링 체크리스트
+  - Actions:
+    - 반복 유형 옵션 상수 추출: repeatTypeOptions 상수 생성하여 MenuItem 중복 제거 (notificationOptions와 동일한 패턴 적용)
+    - 가드 절 적용: addOrUpdateEvent 함수에서 중첩된 if-else를 early return 패턴으로 단순화하여 가독성 향상
+    - 중복 제거: saveEvent + resetForm 호출 중복 제거 (반복일정과 일반 일정 모두 동일한 흐름으로 통합)
+  - Outputs:
+    - 코드 구조 개선: 중첩 감소, 가독성 향상, 유지보수성 향상
+    - 동작 불변 보장: 모든 테스트 Green 유지 확인
+  - Artifacts: src/App.tsx
   <!-- REFACTORING_END -->
 
 ---
 
 ## 🧾 요약 (Summary)
 
-- 상태: `코드 작성(GREEN) 완료`
-- 마지막 수정 에이전트: 코드 작성 에이전트(Nova)
-- 주요 변경사항 요약: 반복 유형 선택 기능 최소 구현 완료 및 테스트 Green 상태 확인. App.tsx에서 반복 유형 선택 UI 활성화(RepeatType import, setRepeatType 활성화, 주석 처리된 UI 코드 활성화), 겹침 검사에서 반복일정 예외 처리 추가. useEventForm.ts에서 isRepeating 초기 상태 버그 수정. TC-01/TC-02/TC-05 모든 테스트 통과 확인 완료. 변경 파일: src/App.tsx, src/hooks/useEventForm.ts.
+- 상태: `리팩토링 완료`
+- 마지막 수정 에이전트: 리팩토링 에이전트(Refacto)
+- 주요 변경사항 요약: 반복 유형 선택 기능 리팩토링 완료. 반복 유형 옵션을 상수로 추출하여 중복 제거 및 유지보수성 향상, addOrUpdateEvent 함수에서 가드 절 적용으로 중첩 감소 및 가독성 개선, saveEvent + resetForm 호출 중복 제거. 모든 테스트 Green 유지 확인. 변경 파일: src/App.tsx.
