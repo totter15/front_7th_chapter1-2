@@ -39,22 +39,27 @@
 2. PM 단계(@pm.md 활용 → Issue 생성)
 
 - 실행: `*create-issue [feature]`
-- 템플릿 준수(2-0): `/.cursor/templates/issue-template.md`를 반드시 참고/준수하여 이슈를 생성한다.
+  - [ ] @pm.md가 issue 파일을 업데이트 했다.
 - 검토(2-1): `/.cursor/checklists/pm-checklist.md` 기준으로 자체 점검 요약을 생성하여 사용자에게 공유
+  - [ ] 검토(2-1) 과정을 실행했다.
 - 요약 갱신(2-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `기획`으로, 마지막 수정 에이전트를 `Issue Writer (PM)`로, 주요 변경 요약을 업데이트
 - 승인(2-2): 사용자에게 다음 단계 진행 여부를 묻고 명시적 허락을 기다림. 허락할 경우 테스트 설계 단계 실행.
 
 3. 테스트 설계 단계(@test-designer.md 활용)
 
 - 실행: `*design-tests [issue-path]`
+  - [ ] @test-designer.md가 issue 파일을 업데이트 했다.
 - 검토(3-1): `/.cursor/checklists/test-plan-checklist.md` 기준 요약을 생성하여 사용자에게 공유
+  - [ ] 검토(3-1) 과정을 실행했다.
 - 요약 갱신(3-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `테스트 설계`로, 마지막 수정 에이전트를 `테스트 설계 에이전트`로, 주요 변경 요약을 업데이트
 - 승인(3-2): 사용자에게 다음 단계 진행 여부를 묻고 허락을 기다림. 허용할 경우 테스트 코드 단계 실행.
 
 4. 테스트 코드 단계(@test-code-developer.md 활용 → RED)
 
 - 실행: `*scaffold-tests [issue-path]`
+  - [ ] @test-code-developer.md가 issue 파일을 업데이트 했다.
 - 검토(4-1): `/.cursor/checklists/test-code-checklist.md` 기준 점검 요약 후 사용자에게 공유
+  - [ ] 검토(4-1) 과정을 실행했다.
 - 요약 갱신(4-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `테스트 코드 작성(RED)`로, 마지막 수정 에이전트를 `테스트 코드 에이전트`로, 추가/수정된 테스트 파일 요약을 기록
 - 승인(4-2): 사용자 허락을 요청하고 대기
 - 커밋(4-3): 사용자가 허락하면 테스트와 이슈를 포함한 **커밋을 생성(구현/리팩토링 코드는 포함하지 않음)**. 커밋 메시지는 `/.cursor/templates/commit-template.md`를 따른다(권장 type: test). 커밋후 구현 단계 실행.
@@ -62,7 +67,13 @@
 5. 구현 단계(@implementaion-developer.md 활용 → GREEN)
 
 - 실행: `*run-green [issue-path]`
+
+  - [ ] @implementaion-developer.md가 issue 파일을 업데이트 했다.
+
 - 검토(5-1): `/.cursor/checklists/implementation-checklist.md` 기준 점검 요약 후 사용자에게 공유
+
+  - [ ] 검토(5-1) 과정을 실행했다.
+
 - 요약 갱신(5-1-1): Issue의 "🧾 요약 (Summary)"에 상태를 `코드 작성(GREEN)`으로, 마지막 수정 에이전트를 `구현 에이전트`로, 주요 변경 파일/핵심 변경 요약을 업데이트
 - 승인(5-2): 사용자 허락을 요청하고 대기
 - 커밋(5-3): 사용자가 허락하면 이슈와 구현 변경만 포함한 커밋을 생성. 커밋 메시지는 `/.cursor/templates/commit-template.md`를 따른다(권장 type: feat 또는 fix). 커밋 후 리팩토링 단계 실행.
@@ -122,9 +133,8 @@
 
 ## ✅ 승인 게이트와 커밋 규칙
 
+- **승인 요청전 검토 단계 필수**
 - 승인 게이트: PM → 테스트 설계 → 테스트 코드(RED) → 구현(GREEN) → 리팩토링 순으로 매 단계 종료 후 사용자 승인 필요
-- 체크리스트: 단계별 전용 체크리스트로 결과를 요약해 승인 판단 자료로 제공
-- PM 승인 기준: 이슈가 `/.cursor/templates/issue-template.md` 섹션 구조를 충족하고, 요구사항이 검증 가능 문장으로 작성되어야 함
 - 커밋 분리: 테스트/구현/리팩토링은 반드시 별도 커밋으로 분리하여 이력 가독성 보장
 - 커밋 전 승인: "커밋 진행해도 될까요?"를 질문하여 사용자의 명시적 OK를 받은 후에만 커밋한다. 승인 기록은 해당 단계의 작업 로그에 남긴다.
 - 커밋 메시지: `/.cursor/templates/commit-template.md` 형식(type/scope/요약) 준수. 단계별 권장 type — RED: test, GREEN: feat|fix, REFACTOR: refactor

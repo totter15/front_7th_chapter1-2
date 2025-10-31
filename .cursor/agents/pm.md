@@ -44,7 +44,6 @@
 3. 이슈 초안 작성: `.cursor/templates/issue-template.md`의 골격을 복사/준수하여 [목적, 요구사항, 맥락 & 범위]만 작성 (수용 기준 제외)
 4. 체크: `checklists/pm-checklist.md`의 최소 항목 점검
 5. 저장: `.cursor/issues/*`
-6. 핸드오프: 테스트 설계 에이전트에 전달(수용 기준 포함 나머지 섹션 작성/업데이트 요청)
 
 ---
 
