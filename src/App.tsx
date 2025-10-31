@@ -467,15 +467,18 @@ function App() {
                     slotProps={{ htmlInput: { min: 1 } }}
                   />
                 </FormControl>
-                <FormControl fullWidth>
-                  <FormLabel>반복 종료일</FormLabel>
-                  <TextField
-                    size="small"
-                    type="date"
-                    value={repeatEndDate}
-                    onChange={(e) => setRepeatEndDate(e.target.value)}
-                  />
-                </FormControl>
+                {repeatType !== 'none' && (
+                  <FormControl fullWidth>
+                    <FormLabel htmlFor="repeat-end-date">반복 종료일</FormLabel>
+                    <TextField
+                      id="repeat-end-date"
+                      size="small"
+                      type="date"
+                      value={repeatEndDate}
+                      onChange={(e) => setRepeatEndDate(e.target.value)}
+                    />
+                  </FormControl>
+                )}
               </Stack>
             </Stack>
           )}

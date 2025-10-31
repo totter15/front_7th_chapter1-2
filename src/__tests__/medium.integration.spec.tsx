@@ -471,10 +471,10 @@ describe('반복 일정 아이콘 표시 (SC-01 ~ SC-04)', () => {
           repeatType === 'daily'
             ? '매일'
             : repeatType === 'weekly'
-            ? '매주'
-            : repeatType === 'monthly'
-            ? '매월'
-            : '매년',
+              ? '매주'
+              : repeatType === 'monthly'
+                ? '매월'
+                : '매년',
       })
     );
 
@@ -702,9 +702,13 @@ describe('반복 종료일 지정 (SC-01 ~ SC-04)', () => {
     await screen.findByText('일정이 추가되었습니다.');
 
     // 저장된 이벤트의 repeat.endDate가 포함되어 있는지 확인
-    // MSW 핸들러에서 저장된 데이터 확인을 위해 이벤트 목록에서 검증
+    // 반복 일정이 여러 개 생성되었으므로 첫 번째 일정만 확인
     const eventList = within(screen.getByTestId('event-list'));
-    expect(eventList.getByText('반복 일정 테스트')).toBeInTheDocument();
+    const events = eventList.getAllByText('반복 일정 테스트');
+    expect(events.length).toBeGreaterThan(0);
+    // 반복 종료일 정보가 표시되는지 확인 (2025-10-15부터 2025-12-31까지 여러 일정 생성)
+    const endDateElements = eventList.getAllByText(/종료: 2025-12-31/);
+    expect(endDateElements.length).toBeGreaterThan(0);
   });
 
   it('TC-04: 반복 유형 미선택 시 종료일 필드 미표시 확인', async () => {
