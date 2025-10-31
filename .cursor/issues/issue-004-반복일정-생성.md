@@ -122,7 +122,7 @@
 
 - [x] Red: 실패하는 테스트 추가 (Test Code Agent)
 - [x] Green: 최소 구현으로 통과 (Implementation Agent)
-- [ ] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
+- [x] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
 
 ---
 
@@ -250,13 +250,44 @@
 - Outputs: 리팩토링 포인트/전후 비교
 - Safeguard: 모든 테스트 Green 유지
   <!-- REFACTORING_START -->
-  (자동 기록)
+  **작업 일시**: 2025-01-XX
+  
+  **Inputs**:
+  - Green 상태: 모든 테스트 통과 (137개)
+  - 구현 완료된 코드
+  
+  **Actions**:
+  1. `src/hooks/useEventOperations.ts` 리팩토링
+     - 중복 제거: `/api/events` POST 호출이 두 곳에 있던 것을 제거
+     - 함수 추출: `createSingleEvent`, `createRecurringEvents` 헬퍼 함수 추가
+     - 조건 분기 간소화: 삼항 연산자로 조건 분기 간결화
+  2. `src/utils/eventUtils.ts` 리팩토링
+     - 날짜 계산 로직 분리: `calculateNextRecurrenceDate` 함수 추출
+     - 코드 가독성 개선: 반복 일정 생성 로직 단순화
+     - import 정리: 중복 import 제거
+  
+  **Outputs**:
+  - 변경 파일:
+    - `src/hooks/useEventOperations.ts` (+17 lines, -23 lines)
+    - `src/utils/eventUtils.ts` (+31 lines, -19 lines)
+  
+  **리팩토링 포인트**:
+  - 중복 코드 제거: `/api/events` POST 호출 통합
+  - 함수 분리: 단일 책임 원칙 적용
+  - 가독성 개선: 조건 분기 로직 간결화
+  - 코드 구조 개선: 날짜 계산 로직 분리
+  
+  **전후 비교**:
+  - Before: 중복된 fetch 호출, 중첩된 조건문
+  - After: 명확한 함수 분리, 간결한 조건 분기
+  
+  **Safeguard**: ✅ 모든 테스트 통과 (137개)
   <!-- REFACTORING_END -->
 
 ---
 
 ## 🧾 요약 (Summary)
 
-- 상태: `구현 완료(GREEN)`
-- 마지막 수정 에이전트: `코드 작성 에이전트`
-- 주요 변경사항 요약: 반복 일정 생성 기능 구현 완료. `generateRecurringEvents` 유틸 함수 구현 및 `useEventOperations`에 반복 일정 생성 로직 추가. 반복 종료일까지 설정된 반복 유형에 따라 일정이 자동 생성됨. 모든 테스트 통과 (137개)
+- 상태: `리팩토링 완료`
+- 마지막 수정 에이전트: `리팩토링 에이전트`
+- 주요 변경사항 요약: 반복 일정 생성 기능 구현 및 리팩토링 완료. 중복 코드 제거, 함수 분리로 가독성 개선, 날짜 계산 로직 분리. 모든 테스트 통과 (137개)
