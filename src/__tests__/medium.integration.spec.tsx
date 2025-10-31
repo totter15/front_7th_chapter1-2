@@ -819,3 +819,342 @@ describe('반복 일정 생성 (SC-01 ~ SC-05)', () => {
     ]);
   });
 });
+
+describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
+  // TC-01: 반복 일정 수정 시 다이얼로그 표시 확인
+  it('TC-01: 반복 일정 수정 시 다이얼로그 표시 확인 - 반복 일정 수정 버튼을 클릭하면 수정 방식 선택 다이얼로그가 표시된다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '반복 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '매주 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        notificationTime: 10,
+      },
+    ];
+
+    server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({ events: mockEvents });
+      }),
+      http.put('/api/events/:id', async ({ params, request }) => {
+        const { id } = params;
+        const updatedEvent = (await request.json()) as Event;
+        const index = mockEvents.findIndex((event) => event.id === id);
+        mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
+        return HttpResponse.json(mockEvents[index]);
+      })
+    );
+
+    const { user } = setup(<App />);
+
+    // 반복 일정이 로드될 때까지 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    // 반복 일정의 수정 버튼 클릭
+    const editButton = await screen.findByLabelText('Edit event');
+    await user.click(editButton);
+
+    // 다이얼로그가 표시되는지 확인
+    expect(screen.getByText('반복 일정 수정')).toBeInTheDocument();
+    expect(screen.getByText('해당 일정만 수정하시겠어요?')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '예' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '아니오' })).toBeInTheDocument();
+  });
+
+  // TC-02: '예' 선택 시 단일 일정으로 수정
+  it('TC-02: 다이얼로그에서 예를 선택하면 해당 일정만 단일 일정으로 변환되어 수정된다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '반복 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '매주 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        notificationTime: 10,
+      },
+    ];
+
+    const capturedRequestBody: { current: Event | null } = { current: null };
+
+    server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({ events: mockEvents });
+      }),
+      http.put('/api/events/:id', async ({ params, request }) => {
+        const { id } = params;
+        const updatedEvent = (await request.json()) as Event;
+        capturedRequestBody.current = updatedEvent;
+        const index = mockEvents.findIndex((event) => event.id === id);
+        mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
+        return HttpResponse.json(mockEvents[index]);
+      })
+    );
+
+    const { user } = setup(<App />);
+
+    await screen.findByText('일정 로딩 완료!');
+
+    // 반복 일정의 수정 버튼 클릭
+    const editButton = await screen.findByLabelText('Edit event');
+    await user.click(editButton);
+
+    // 다이얼로그에서 '예' 선택
+    const yesButton = screen.getByRole('button', { name: '예' });
+    await user.click(yesButton);
+
+    // 일정 수정 폼이 열리고 제목을 수정
+    const titleInput = screen.getByLabelText('제목');
+    await user.clear(titleInput);
+    await user.type(titleInput, '수정된 단일 일정');
+
+    // 일정 수정 버튼 클릭
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // PUT 요청이 호출되었고 repeat.type이 'none'으로 변경되었는지 확인
+    await screen.findByText('일정이 수정되었습니다.');
+    expect(capturedRequestBody.current).not.toBeNull();
+    expect(capturedRequestBody.current?.repeat.type).toBe('none');
+  });
+
+  // TC-03: '예' 선택 후 수정된 일정의 반복 아이콘 제거 확인
+  it('TC-03: 단일 일정으로 변환 후 저장된 일정에서 반복 아이콘이 사라진다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '반복 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '매주 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        notificationTime: 10,
+      },
+    ];
+
+    server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({ events: mockEvents });
+      }),
+      http.put('/api/events/:id', async ({ params, request }) => {
+        const { id } = params;
+        const updatedEvent = (await request.json()) as Event;
+        const index = mockEvents.findIndex((event) => event.id === id);
+        mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
+        return HttpResponse.json(mockEvents[index]);
+      })
+    );
+
+    const { user } = setup(<App />);
+
+    await screen.findByText('일정 로딩 완료!');
+
+    // 수정 전 반복 아이콘 확인 (전체 event-list 내에 반복 아이콘이 존재함)
+    const eventListBefore = screen.getByTestId('event-list');
+    const repeatIconsBefore = within(eventListBefore).queryAllByLabelText('반복 일정');
+    expect(repeatIconsBefore.length).toBeGreaterThan(0);
+
+    // 반복 일정의 수정 버튼 클릭
+    const editButton = await screen.findByLabelText('Edit event');
+    await user.click(editButton);
+
+    // 다이얼로그에서 '예' 선택
+    await user.click(screen.getByRole('button', { name: '예' }));
+
+    // 제목 수정
+    const titleInput = screen.getByLabelText('제목');
+    await user.clear(titleInput);
+    await user.type(titleInput, '수정된 단일 일정');
+
+    // 일정 수정
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    await screen.findByText('일정이 수정되었습니다.');
+
+    // 수정 후 반복 아이콘이 사라졌는지 확인 (전체 event-list 내에 반복 아이콘이 없어야 함)
+    const eventListAfter = screen.getByTestId('event-list');
+    const repeatIconsAfter = within(eventListAfter).queryAllByLabelText('반복 일정');
+    expect(repeatIconsAfter.length).toBe(0);
+  });
+
+  // TC-04: '아니오' 선택 시 전체 시리즈 수정
+  it('TC-04: 다이얼로그에서 아니오를 선택하면 반복 설정을 유지한 채로 전체 시리즈가 수정된다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '반복 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '매주 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        notificationTime: 10,
+      },
+    ];
+
+    const capturedRequestBody: { current: Event | null } = { current: null };
+
+    server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({ events: mockEvents });
+      }),
+      http.put('/api/events/:id', async ({ params, request }) => {
+        const { id } = params;
+        const updatedEvent = (await request.json()) as Event;
+        capturedRequestBody.current = updatedEvent;
+        const index = mockEvents.findIndex((event) => event.id === id);
+        mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
+        return HttpResponse.json(mockEvents[index]);
+      })
+    );
+
+    const { user } = setup(<App />);
+
+    await screen.findByText('일정 로딩 완료!');
+
+    // 반복 일정의 수정 버튼 클릭
+    const editButton = await screen.findByLabelText('Edit event');
+    await user.click(editButton);
+
+    // 다이얼로그에서 '아니오' 선택
+    const noButton = screen.getByRole('button', { name: '아니오' });
+    await user.click(noButton);
+
+    // 제목 수정
+    const titleInput = screen.getByLabelText('제목');
+    await user.clear(titleInput);
+    await user.type(titleInput, '수정된 전체 시리즈');
+
+    // 일정 수정
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // PUT 요청이 호출되었고 repeat 정보가 유지되었는지 확인
+    await screen.findByText('일정이 수정되었습니다.');
+    expect(capturedRequestBody.current).not.toBeNull();
+    expect(capturedRequestBody.current?.repeat.type).toBe('weekly');
+    expect(capturedRequestBody.current?.repeat.interval).toBe(1);
+    expect(capturedRequestBody.current?.repeat.endDate).toBe('2025-11-15');
+  });
+
+  // TC-05: '아니오' 선택 후 수정된 일정의 반복 아이콘 유지 확인
+  it('TC-05: 전체 시리즈 수정 후에도 반복 아이콘이 유지된다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '반복 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '매주 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        notificationTime: 10,
+      },
+    ];
+
+    server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({ events: mockEvents });
+      }),
+      http.put('/api/events/:id', async ({ params, request }) => {
+        const { id } = params;
+        const updatedEvent = (await request.json()) as Event;
+        const index = mockEvents.findIndex((event) => event.id === id);
+        mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
+        return HttpResponse.json(mockEvents[index]);
+      })
+    );
+
+    const { user } = setup(<App />);
+
+    await screen.findByText('일정 로딩 완료!');
+
+    // 수정 전 반복 아이콘 확인 (전체 event-list 내에 반복 아이콘이 존재함)
+    const eventListBefore = screen.getByTestId('event-list');
+    const repeatIconsBefore = within(eventListBefore).queryAllByLabelText('반복 일정');
+    expect(repeatIconsBefore.length).toBeGreaterThan(0);
+
+    // 반복 일정의 수정 버튼 클릭
+    const editButton = await screen.findByLabelText('Edit event');
+    await user.click(editButton);
+
+    // 다이얼로그에서 '아니오' 선택
+    await user.click(screen.getByRole('button', { name: '아니오' }));
+
+    // 제목 수정
+    const titleInput = screen.getByLabelText('제목');
+    await user.clear(titleInput);
+    await user.type(titleInput, '수정된 전체 시리즈');
+
+    // 일정 수정
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    await screen.findByText('일정이 수정되었습니다.');
+
+    // 수정 후에도 반복 아이콘이 유지되는지 확인 (전체 event-list 내에 반복 아이콘이 여전히 존재함)
+    const eventListAfter = screen.getByTestId('event-list');
+    const repeatIconsAfter = within(eventListAfter).queryAllByLabelText('반복 일정');
+    expect(repeatIconsAfter.length).toBeGreaterThan(0);
+  });
+
+  // TC-06: 단일 일정 수정 시 다이얼로그 미표시
+  it('TC-06: 단일 일정 수정 시 다이얼로그가 표시되지 않고 바로 수정 모드로 진입한다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '단일 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '단일 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+
+    server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({ events: mockEvents });
+      }),
+      http.put('/api/events/:id', async ({ params, request }) => {
+        const { id } = params;
+        const updatedEvent = (await request.json()) as Event;
+        const index = mockEvents.findIndex((event) => event.id === id);
+        mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
+        return HttpResponse.json(mockEvents[index]);
+      })
+    );
+
+    const { user } = setup(<App />);
+
+    await screen.findByText('일정 로딩 완료!');
+
+    // 단일 일정의 수정 버튼 클릭
+    const editButton = await screen.findByLabelText('Edit event');
+    await user.click(editButton);
+
+    // 다이얼로그가 표시되지 않는지 확인
+    expect(screen.queryByText('해당 일정만 수정하시겠어요?')).not.toBeInTheDocument();
+
+    // 일정 수정 폼이 바로 열렸는지 확인 (헤더 영역의 Typography를 찾음)
+    const headers = screen.getAllByText('일정 수정');
+    expect(headers.length).toBeGreaterThan(0);
+    expect(screen.getByLabelText('제목')).toHaveValue('단일 회의');
+  });
+});
