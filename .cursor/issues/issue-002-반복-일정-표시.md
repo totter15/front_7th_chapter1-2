@@ -224,6 +224,6 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `리팩토링 완료`
-- 마지막 수정 에이전트: `리팩토링 에이전트`
-- 주요 변경사항 요약: 반복 일정 아이콘 표시 기능 리팩토링 완료. 월 뷰와 주 뷰에서 중복된 이벤트 아이템 렌더링 로직을 `renderEventItem` 헬퍼 함수로 추출하여 중복 제거 및 가독성 향상. 동작은 동일하게 유지 (Behavior Preserving). 테스트 실행 결과: TC-01 ~ TC-04 모두 통과 (20개 테스트 전체 통과). 변경 파일: `src/App.tsx`
+- 상태: `완료`
+- 마지막 수정 에이전트: `오케스트레이터`
+- 주요 변경사항 요약: 반복 일정 아이콘 표시 기능 개발 완료. TDD 사이클(Red → Green → Refactor) 완료. Material UI Repeat 아이콘을 월/주 뷰에 조건부 렌더링 추가. 중복 코드 제거를 위한 `renderEventItem` 헬퍼 함수 추출. 테스트 실행 결과: TC-01 ~ TC-04 모두 통과 (20개 테스트 전체 통과). 변경 파일: `src/App.tsx`, `src/__tests__/medium.integration.spec.tsx`. 커밋: test(Red), feat(Green), refactor(Refactor), docs(완료)
