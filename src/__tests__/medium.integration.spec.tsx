@@ -340,3 +340,86 @@ it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
 
   expect(screen.getByText('10분 후 기존 회의 일정이 시작됩니다.')).toBeInTheDocument();
 });
+
+describe('반복 일정 (SC-01)', () => {
+  it('TC-01: 사용자가 반복 일정 체크박스를 선택하면 반복 유형 선택 UI가 표시되고 매일/매주/매월/매년 옵션을 선택할 수 있다', async () => {
+    const { user } = setup(<App />);
+
+    // 반복 일정 체크박스 클릭
+    const repeatCheckbox = screen.getByLabelText('반복 일정');
+    await user.click(repeatCheckbox);
+
+    // 반복 유형 드롭다운이 표시되는지 확인
+    const repeatTypeSelect = screen.getByLabelText('반복 유형');
+    expect(repeatTypeSelect).toBeInTheDocument();
+
+    // 드롭다운 클릭하여 옵션 확인
+    await user.click(repeatTypeSelect);
+    await user.click(within(repeatTypeSelect).getByRole('combobox'));
+
+    // 매일, 매주, 매월, 매년 옵션이 모두 표시되는지 확인
+    expect(screen.getByRole('option', { name: '매일' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '매주' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '매월' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '매년' })).toBeInTheDocument();
+
+    // 매일 옵션 선택
+    await user.click(screen.getByRole('option', { name: '매일' }));
+    expect(repeatTypeSelect).toHaveTextContent('매일');
+  });
+});
+
+describe('반복일정 겹침 검사 제외 (SC-05)', () => {
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  it('TC-05: 반복일정 생성 시 기존 일정과 겹치더라도 경고 없이 저장된다', async () => {
+    setupMockHandlerCreation([
+      {
+        id: '1',
+        title: '기존 회의',
+        date: '2024-01-15',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '기존 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
+
+    const { user } = setup(<App />);
+
+    // 일정 생성 폼 입력
+    await user.click(screen.getAllByText('일정 추가')[0]);
+    await user.type(screen.getByLabelText('제목'), '반복 회의');
+    await user.type(screen.getByLabelText('날짜'), '2024-01-15');
+    await user.type(screen.getByLabelText('시작 시간'), '10:00');
+    await user.type(screen.getByLabelText('종료 시간'), '11:00');
+    await user.type(screen.getByLabelText('설명'), '설명');
+    await user.type(screen.getByLabelText('위치'), '회의실 A');
+    await user.click(screen.getByLabelText('카테고리'));
+    await user.click(within(screen.getByLabelText('카테고리')).getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: '업무-option' }));
+
+    // 반복 일정 체크박스 선택
+    await user.click(screen.getByLabelText('반복 일정'));
+
+    // 반복 유형을 매일로 선택
+    const repeatTypeSelect = screen.getByLabelText('반복 유형');
+    await user.click(repeatTypeSelect);
+    await user.click(within(repeatTypeSelect).getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: '매일' }));
+
+    // 일정 저장
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // 겹침 경고 다이얼로그가 표시되지 않는지 확인
+    expect(screen.queryByText('일정 겹침 경고')).not.toBeInTheDocument();
+
+    // 성공 토스트 확인
+    expect(await screen.findByText('일정이 추가되었습니다.')).toBeInTheDocument();
+  });
+});
