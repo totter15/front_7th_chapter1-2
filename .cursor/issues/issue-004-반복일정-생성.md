@@ -121,7 +121,7 @@
 ## 🔁 TDD 사이클 (Red → Green → Refactor)
 
 - [x] Red: 실패하는 테스트 추가 (Test Code Agent)
-- [ ] Green: 최소 구현으로 통과 (Implementation Agent)
+- [x] Green: 최소 구현으로 통과 (Implementation Agent)
 - [ ] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
 
 ---
@@ -196,7 +196,43 @@
 - Outputs: 변경 파일/주요 변경 요약
 - Artifacts: 소스 코드 경로
   <!-- IMPLEMENTATION_START -->
-  (자동 기록)
+  **작업 일시**: 2025-01-XX
+  
+  **Inputs**:
+  - 실패 테스트: Unit 테스트 5개, Integration 테스트 1개 (총 6개 실패)
+  - 테스트 파일: `src/__tests__/unit/easy.generateRecurringEvents.spec.ts`, `src/__tests__/medium.integration.spec.tsx`
+  
+  **Actions**:
+  1. `src/utils/eventUtils.ts`에 `generateRecurringEvents` 함수 구현
+     - 반복 유형(daily/weekly/monthly/yearly)에 따라 종료일까지 일정 생성
+     - `formatDate` 유틸 함수 활용
+  2. `src/hooks/useEventOperations.ts` 수정
+     - 반복 일정인 경우 `generateRecurringEvents` 호출하여 여러 일정 생성
+     - 생성된 일정들을 `/api/events-list` 엔드포인트로 전송
+  3. `src/__mocks__/handlersUtils.ts` 수정
+     - `setupMockHandlerCreation`에 `/api/events-list` 핸들러 추가
+  4. `src/__tests__/medium.integration.spec.tsx` 수정
+     - TC-03 테스트 수정 (반복 일정이 여러 개 생성되는 경우 처리)
+  
+  **Outputs**:
+  - 변경 파일:
+    - `src/utils/eventUtils.ts` (+46 lines)
+    - `src/hooks/useEventOperations.ts` (+20 lines)
+    - `src/__mocks__/handlersUtils.ts` (+12 lines)
+    - `src/__tests__/medium.integration.spec.tsx` (+5 lines, -2 lines)
+  
+  **주요 변경 요약**:
+  - `generateRecurringEvents`: 반복 일정 생성 로직 구현 (매일/매주/매월/매년 지원)
+  - `useEventOperations.saveEvent`: 반복 일정인 경우 여러 일정 생성 후 `/api/events-list` 호출
+  - Mock 핸들러에 `/api/events-list` 지원 추가
+  - TC-03 테스트: `getAllByText` 사용하여 여러 일정 처리
+  
+  **Artifacts**:
+  - `src/utils/eventUtils.ts` (generateRecurringEvents 함수)
+  - `src/hooks/useEventOperations.ts` (saveEvent 함수)
+  - `src/__mocks__/handlersUtils.ts` (setupMockHandlerCreation 함수)
+  
+  **테스트 결과**: ✅ 모든 테스트 통과 (137개)
   <!-- IMPLEMENTATION_END -->
 
 ---
@@ -215,6 +251,6 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `테스트 코드 작성(RED)`
-- 마지막 수정 에이전트: `테스트 코드 에이전트`
-- 주요 변경사항 요약: 반복일정 생성 기능 실패하는 테스트 코드 작성 완료. Unit 테스트 5개 (TC-01 ~ TC-05)와 Integration 테스트 1개 (TC-06) 작성. 테스트 실행 결과 Unit 테스트 5개 모두 실패 (generateRecurringEvents 함수 없음). 반복 일정 생성 유틸 함수 구현 필요
+- 상태: `구현 완료(GREEN)`
+- 마지막 수정 에이전트: `코드 작성 에이전트`
+- 주요 변경사항 요약: 반복 일정 생성 기능 구현 완료. `generateRecurringEvents` 유틸 함수 구현 및 `useEventOperations`에 반복 일정 생성 로직 추가. 반복 종료일까지 설정된 반복 유형에 따라 일정이 자동 생성됨. 모든 테스트 통과 (137개)
