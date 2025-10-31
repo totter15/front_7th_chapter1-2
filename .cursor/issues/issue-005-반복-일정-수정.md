@@ -233,6 +233,6 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `리팩토링`
-- 마지막 수정 에이전트: 리팩토링 에이전트
-- 주요 변경사항 요약: 반복 아이콘 렌더링을 `RepeatBadge` 컴포넌트로 추출하여 중복 제거 및 일관성 확보. 모든 테스트 Green 유지(31개). 변경 파일: `src/App.tsx`.
+- 상태: `완료`
+- 마지막 수정 에이전트: 오케스트레이터
+- 주요 변경사항 요약: 반복 일정 수정 기능 TDD 사이클 완료(Red → Green → Refactor). 테스트 6개 추가 및 통과, event-list 반복 아이콘 표시 구현, RepeatBadge로 중복 제거. 모든 테스트 Green(31) 및 Lint 정상. 변경 파일: `src/__tests__/medium.integration.spec.tsx`, `src/App.tsx`. 이슈 문서 최신화 완료.
