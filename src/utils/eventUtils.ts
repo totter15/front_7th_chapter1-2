@@ -1,6 +1,5 @@
 import { Event, EventForm } from '../types';
-import { formatDate } from './dateUtils';
-import { getWeekDates, isDateInRange } from './dateUtils';
+import { formatDate, getWeekDates, isDateInRange } from './dateUtils';
 
 function filterEventsByDateRange(events: Event[], start: Date, end: Date): Event[] {
   return events.filter((event) => {
@@ -59,6 +58,34 @@ export function getFilteredEvents(
 }
 
 /**
+ * 다음 반복 날짜를 계산합니다.
+ * @param currentDate 현재 날짜
+ * @param repeatType 반복 유형
+ * @param interval 반복 간격
+ * @returns 계산된 다음 날짜 (원본 객체 수정)
+ */
+function calculateNextRecurrenceDate(
+  currentDate: Date,
+  repeatType: 'daily' | 'weekly' | 'monthly' | 'yearly',
+  interval: number
+): void {
+  switch (repeatType) {
+    case 'daily':
+      currentDate.setDate(currentDate.getDate() + interval);
+      break;
+    case 'weekly':
+      currentDate.setDate(currentDate.getDate() + 7 * interval);
+      break;
+    case 'monthly':
+      currentDate.setMonth(currentDate.getMonth() + interval);
+      break;
+    case 'yearly':
+      currentDate.setFullYear(currentDate.getFullYear() + interval);
+      break;
+  }
+}
+
+/**
  * 반복 일정을 생성하여 EventForm 배열을 반환합니다.
  * @param eventForm 기본 이벤트 정보 (반복 설정 포함)
  * @returns 생성된 반복 일정 배열
@@ -74,32 +101,15 @@ export function generateRecurringEvents(eventForm: EventForm): EventForm[] {
   const startDate = new Date(date);
   const endDate = new Date(repeat.endDate);
   const events: EventForm[] = [];
-
   let currentDate = new Date(startDate);
 
   while (currentDate <= endDate) {
-    const eventDateStr = formatDate(currentDate);
-
     events.push({
       ...eventForm,
-      date: eventDateStr,
+      date: formatDate(currentDate),
     });
 
-    // 다음 반복 날짜 계산
-    switch (repeat.type) {
-      case 'daily':
-        currentDate.setDate(currentDate.getDate() + repeat.interval);
-        break;
-      case 'weekly':
-        currentDate.setDate(currentDate.getDate() + 7 * repeat.interval);
-        break;
-      case 'monthly':
-        currentDate.setMonth(currentDate.getMonth() + repeat.interval);
-        break;
-      case 'yearly':
-        currentDate.setFullYear(currentDate.getFullYear() + repeat.interval);
-        break;
-    }
+    calculateNextRecurrenceDate(currentDate, repeat.type, repeat.interval);
   }
 
   return events;
