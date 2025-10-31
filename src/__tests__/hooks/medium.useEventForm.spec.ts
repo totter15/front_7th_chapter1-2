@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
 import { useEventForm } from '../../hooks/useEventForm';
-import { Event, RepeatType } from '../../types';
+import { Event } from '../../types';
 
 describe('useEventForm 반복 유형 상태 관리 (TC-02)', () => {
   it('초기 상태에서 repeatType은 none이다', () => {
@@ -100,7 +100,7 @@ describe('useEventForm 반복 유형 상태 관리 (TC-02)', () => {
       notificationTime: 10,
     };
 
-    const { result, rerender } = renderHook(() => useEventForm());
+    const { result } = renderHook(() => useEventForm());
 
     act(() => {
       result.current.editEvent(weeklyEvent);
