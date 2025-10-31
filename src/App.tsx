@@ -1,4 +1,12 @@
-import { Notifications, ChevronLeft, ChevronRight, Delete, Edit, Close } from '@mui/icons-material';
+import {
+  Notifications,
+  ChevronLeft,
+  ChevronRight,
+  Delete,
+  Edit,
+  Close,
+  Repeat,
+} from '@mui/icons-material';
 import {
   Alert,
   AlertTitle,
@@ -200,6 +208,7 @@ function App() {
                       )
                       .map((event) => {
                         const isNotified = notifiedEvents.includes(event.id);
+                        const isRepeating = event.repeat.type !== 'none';
                         return (
                           <Box
                             key={event.id}
@@ -217,6 +226,7 @@ function App() {
                           >
                             <Stack direction="row" spacing={1} alignItems="center">
                               {isNotified && <Notifications fontSize="small" />}
+                              {isRepeating && <Repeat fontSize="small" aria-label="반복 일정" />}
                               <Typography
                                 variant="caption"
                                 noWrap
@@ -287,6 +297,7 @@ function App() {
                             )}
                             {getEventsForDay(filteredEvents, day).map((event) => {
                               const isNotified = notifiedEvents.includes(event.id);
+                              const isRepeating = event.repeat.type !== 'none';
                               return (
                                 <Box
                                   key={event.id}
@@ -304,6 +315,9 @@ function App() {
                                 >
                                   <Stack direction="row" spacing={1} alignItems="center">
                                     {isNotified && <Notifications fontSize="small" />}
+                                    {isRepeating && (
+                                      <Repeat fontSize="small" aria-label="반복 일정" />
+                                    )}
                                     <Typography
                                       variant="caption"
                                       noWrap
@@ -444,6 +458,7 @@ function App() {
               size="small"
               value={notificationTime}
               onChange={(e) => setNotificationTime(Number(e.target.value))}
+              aria-label="알림 설정"
             >
               {notificationOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>

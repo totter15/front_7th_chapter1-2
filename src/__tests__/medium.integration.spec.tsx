@@ -452,7 +452,7 @@ describe('반복 일정 아이콘 표시 (SC-01 ~ SC-04)', () => {
 
     // 알림 시간 설정 (선택적)
     if (notificationTime !== undefined) {
-      const notificationSelect = screen.getByLabelText('알림 시간');
+      const notificationSelect = screen.getByLabelText('알림 설정');
       await user.click(notificationSelect);
       await user.click(within(notificationSelect).getByRole('combobox'));
       await user.click(screen.getByRole('option', { name: `${notificationTime}분 전` }));
@@ -471,10 +471,10 @@ describe('반복 일정 아이콘 표시 (SC-01 ~ SC-04)', () => {
           repeatType === 'daily'
             ? '매일'
             : repeatType === 'weekly'
-              ? '매주'
-              : repeatType === 'monthly'
-                ? '매월'
-                : '매년',
+            ? '매주'
+            : repeatType === 'monthly'
+            ? '매월'
+            : '매년',
       })
     );
 
