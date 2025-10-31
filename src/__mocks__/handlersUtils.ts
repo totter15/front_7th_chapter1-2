@@ -6,6 +6,7 @@ import { Event } from '../types';
 // ! Hard 여기 제공 안함
 export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
   const mockEvents: Event[] = [...initEvents];
+  let eventIdCounter = mockEvents.length + 1;
 
   server.use(
     http.get('/api/events', () => {
@@ -13,18 +14,18 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
     }),
     http.post('/api/events', async ({ request }) => {
       const newEvent = (await request.json()) as Event;
-      newEvent.id = String(mockEvents.length + 1); // 간단한 ID 생성
+      newEvent.id = String(eventIdCounter++); // 간단한 ID 생성
       mockEvents.push(newEvent);
       return HttpResponse.json(newEvent, { status: 201 });
     }),
-    http.delete('/api/recurring-events/:id', ({ params }) => {
-      const { id } = params;
-      const idx = mockEvents.findIndex((e) => e.id === id);
-      if (idx !== -1) {
-        mockEvents.splice(idx, 1);
-        return new HttpResponse(null, { status: 204 });
-      }
-      return new HttpResponse(null, { status: 404 });
+    http.post('/api/events-list', async ({ request }) => {
+      const body = (await request.json()) as { events: Event[] };
+      const newEvents = body.events.map((event) => ({
+        ...event,
+        id: String(eventIdCounter++),
+      }));
+      mockEvents.push(...newEvents);
+      return HttpResponse.json(newEvents, { status: 201 });
     })
   );
 };
