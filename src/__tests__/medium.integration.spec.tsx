@@ -423,3 +423,203 @@ describe('반복일정 겹침 검사 제외 (SC-05)', () => {
     expect(await screen.findByText('일정이 추가되었습니다.')).toBeInTheDocument();
   });
 });
+
+describe('반복 일정 아이콘 표시 (SC-01 ~ SC-04)', () => {
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  // 반복 일정 생성 헬퍼 함수
+  const saveRepeatingSchedule = async (
+    user: UserEvent,
+    form: Omit<Event, 'id' | 'notificationTime'> & { notificationTime?: number },
+    repeatType: 'daily' | 'weekly' | 'monthly' | 'yearly'
+  ) => {
+    const { title, date, startTime, endTime, location, description, category, notificationTime } =
+      form;
+
+    await user.click(screen.getAllByText('일정 추가')[0]);
+
+    await user.type(screen.getByLabelText('제목'), title);
+    await user.type(screen.getByLabelText('날짜'), date);
+    await user.type(screen.getByLabelText('시작 시간'), startTime);
+    await user.type(screen.getByLabelText('종료 시간'), endTime);
+    await user.type(screen.getByLabelText('설명'), description);
+    await user.type(screen.getByLabelText('위치'), location);
+    await user.click(screen.getByLabelText('카테고리'));
+    await user.click(within(screen.getByLabelText('카테고리')).getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: `${category}-option` }));
+
+    // 알림 시간 설정 (선택적)
+    if (notificationTime !== undefined) {
+      const notificationSelect = screen.getByLabelText('알림 시간');
+      await user.click(notificationSelect);
+      await user.click(within(notificationSelect).getByRole('combobox'));
+      await user.click(screen.getByRole('option', { name: `${notificationTime}분 전` }));
+    }
+
+    // 반복 일정 체크박스 선택
+    await user.click(screen.getByLabelText('반복 일정'));
+
+    // 반복 유형 선택
+    const repeatTypeSelect = screen.getByLabelText('반복 유형');
+    await user.click(repeatTypeSelect);
+    await user.click(within(repeatTypeSelect).getByRole('combobox'));
+    await user.click(
+      screen.getByRole('option', {
+        name:
+          repeatType === 'daily'
+            ? '매일'
+            : repeatType === 'weekly'
+              ? '매주'
+              : repeatType === 'monthly'
+                ? '매월'
+                : '매년',
+      })
+    );
+
+    await user.click(screen.getByTestId('event-submit-button'));
+    await screen.findByText('일정이 추가되었습니다.');
+  };
+
+  it('TC-01: 월 뷰에서 반복 일정 아이콘 표시 확인', async () => {
+    setupMockHandlerCreation();
+    vi.setSystemTime(new Date('2025-10-01'));
+
+    const { user } = setup(<App />);
+
+    await saveRepeatingSchedule(
+      user,
+      {
+        title: '매주 팀 회의',
+        date: '2025-10-02',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1 },
+      },
+      'weekly'
+    );
+
+    const monthView = within(screen.getByTestId('month-view'));
+    const eventTitle = monthView.getByText('매주 팀 회의');
+
+    // 반복 아이콘이 표시되는지 확인 (aria-label="반복 일정" 또는 data-testid 사용)
+    const eventContainer = eventTitle.closest('div[class*="Box"]') || eventTitle.closest('div');
+    expect(eventContainer).toBeInTheDocument();
+
+    // 반복 아이콘 검증 - 구현 후 aria-label이나 역할로 검증
+    const repeatIcon = within(eventContainer as HTMLElement).queryByLabelText('반복 일정');
+    expect(repeatIcon).toBeInTheDocument();
+  });
+
+  it('TC-02: 주 뷰에서 반복 일정 아이콘 표시 확인', async () => {
+    setupMockHandlerCreation();
+    vi.setSystemTime(new Date('2025-10-01'));
+
+    const { user } = setup(<App />);
+
+    await saveRepeatingSchedule(
+      user,
+      {
+        title: '매일 아침 회의',
+        date: '2025-10-02',
+        startTime: '09:00',
+        endTime: '09:30',
+        description: '데일리 스탠드업',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'daily', interval: 1 },
+      },
+      'daily'
+    );
+
+    // 주 뷰로 전환
+    await user.click(within(screen.getByLabelText('뷰 타입 선택')).getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: 'week-option' }));
+
+    const weekView = within(screen.getByTestId('week-view'));
+    const eventTitle = weekView.getByText('매일 아침 회의');
+
+    // 반복 아이콘이 표시되는지 확인
+    const eventContainer = eventTitle.closest('div[class*="Box"]') || eventTitle.closest('div');
+    expect(eventContainer).toBeInTheDocument();
+
+    const repeatIcon = within(eventContainer as HTMLElement).queryByLabelText('반복 일정');
+    expect(repeatIcon).toBeInTheDocument();
+  });
+
+  it('TC-03: 반복 일정이 아닌 일정에는 아이콘 미표시 확인', async () => {
+    setupMockHandlerCreation();
+    vi.setSystemTime(new Date('2025-10-01'));
+
+    const { user } = setup(<App />);
+
+    await saveSchedule(user, {
+      title: '일반 회의',
+      date: '2025-10-02',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '일반 팀 미팅',
+      location: '회의실 A',
+      category: '업무',
+    });
+
+    const monthView = within(screen.getByTestId('month-view'));
+    const eventTitle = monthView.getByText('일반 회의');
+
+    // 반복 아이콘이 표시되지 않는지 확인
+    const eventContainer = eventTitle.closest('div[class*="Box"]') || eventTitle.closest('div');
+    expect(eventContainer).toBeInTheDocument();
+
+    const repeatIcon = within(eventContainer as HTMLElement).queryByLabelText('반복 일정');
+    expect(repeatIcon).not.toBeInTheDocument();
+  });
+
+  it('TC-04: 반복 아이콘과 알림 아이콘 동시 표시 확인', async () => {
+    setupMockHandlerCreation();
+    // 알림이 표시되도록 시간 설정 (notificationTime: 10분 전)
+    vi.setSystemTime(new Date('2025-10-02 08:50:00'));
+
+    const { user } = setup(<App />);
+
+    // 반복 일정 생성 (알림 시간 설정 포함)
+    await saveRepeatingSchedule(
+      user,
+      {
+        title: '매주 알림 회의',
+        date: '2025-10-02',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '알림이 있는 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1 },
+        notificationTime: 10,
+      },
+      'weekly'
+    );
+
+    // 알림이 표시되도록 시간 경과
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    const monthView = within(screen.getByTestId('month-view'));
+    const eventTitle = monthView.getByText('매주 알림 회의');
+
+    // 반복 아이콘과 알림 아이콘이 모두 표시되는지 확인
+    const eventContainer = eventTitle.closest('div[class*="Box"]') || eventTitle.closest('div');
+    expect(eventContainer).toBeInTheDocument();
+
+    // 반복 아이콘 확인
+    const repeatIcon = within(eventContainer as HTMLElement).queryByLabelText('반복 일정');
+    expect(repeatIcon).toBeInTheDocument();
+
+    // 알림 아이콘 확인 (Notifications 아이콘)
+    // 알림 텍스트로 알림이 표시되었는지 확인
+    expect(screen.queryByText(/10분 후.*일정이 시작됩니다/)).toBeInTheDocument();
+  });
+});
