@@ -471,10 +471,10 @@ describe('반복 일정 아이콘 표시 (SC-01 ~ SC-04)', () => {
           repeatType === 'daily'
             ? '매일'
             : repeatType === 'weekly'
-              ? '매주'
-              : repeatType === 'monthly'
-                ? '매월'
-                : '매년',
+            ? '매주'
+            : repeatType === 'monthly'
+            ? '매월'
+            : '매년',
       })
     );
 

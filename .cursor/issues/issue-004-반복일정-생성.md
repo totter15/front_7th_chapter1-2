@@ -196,13 +196,16 @@
 - Outputs: 변경 파일/주요 변경 요약
 - Artifacts: 소스 코드 경로
   <!-- IMPLEMENTATION_START -->
+
   **작업 일시**: 2025-01-XX
-  
+
   **Inputs**:
+
   - 실패 테스트: Unit 테스트 5개, Integration 테스트 1개 (총 6개 실패)
   - 테스트 파일: `src/__tests__/unit/easy.generateRecurringEvents.spec.ts`, `src/__tests__/medium.integration.spec.tsx`
-  
+
   **Actions**:
+
   1. `src/utils/eventUtils.ts`에 `generateRecurringEvents` 함수 구현
      - 반복 유형(daily/weekly/monthly/yearly)에 따라 종료일까지 일정 생성
      - `formatDate` 유틸 함수 활용
@@ -213,25 +216,28 @@
      - `setupMockHandlerCreation`에 `/api/events-list` 핸들러 추가
   4. `src/__tests__/medium.integration.spec.tsx` 수정
      - TC-03 테스트 수정 (반복 일정이 여러 개 생성되는 경우 처리)
-  
+
   **Outputs**:
+
   - 변경 파일:
     - `src/utils/eventUtils.ts` (+46 lines)
     - `src/hooks/useEventOperations.ts` (+20 lines)
     - `src/__mocks__/handlersUtils.ts` (+12 lines)
     - `src/__tests__/medium.integration.spec.tsx` (+5 lines, -2 lines)
-  
+
   **주요 변경 요약**:
+
   - `generateRecurringEvents`: 반복 일정 생성 로직 구현 (매일/매주/매월/매년 지원)
   - `useEventOperations.saveEvent`: 반복 일정인 경우 여러 일정 생성 후 `/api/events-list` 호출
   - Mock 핸들러에 `/api/events-list` 지원 추가
   - TC-03 테스트: `getAllByText` 사용하여 여러 일정 처리
-  
+
   **Artifacts**:
+
   - `src/utils/eventUtils.ts` (generateRecurringEvents 함수)
   - `src/hooks/useEventOperations.ts` (saveEvent 함수)
   - `src/__mocks__/handlersUtils.ts` (setupMockHandlerCreation 함수)
-  
+
   **테스트 결과**: ✅ 모든 테스트 통과 (137개)
   <!-- IMPLEMENTATION_END -->
 
