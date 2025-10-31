@@ -74,6 +74,12 @@ const repeatTypeOptions: Array<{ value: RepeatType; label: string }> = [
   { value: 'yearly', label: '매년' },
 ];
 
+// 반복 시리즈 식별자 해석
+const resolveRecurringSeriesId = (event: Event): string => {
+  const withBase = event as unknown as { baseId?: string };
+  return withBase.baseId ?? event.id;
+};
+
 // 반복 아이콘 배지
 const RepeatBadge = () => (
   <span aria-label="반복 일정" title="반복 일정">
@@ -218,9 +224,8 @@ function App() {
 
   const handleDeleteAllOccurrences = () => {
     if (pendingDeleteEvent) {
-      // 전체 시리즈 삭제: baseId가 있으면 사용, 없으면 id 사용
-      const baseId = (pendingDeleteEvent as unknown as { baseId?: string }).baseId;
-      deleteRecurringSeries(baseId ?? pendingDeleteEvent.id);
+      // 전체 시리즈 삭제
+      deleteRecurringSeries(resolveRecurringSeriesId(pendingDeleteEvent));
     }
     setIsDeleteRecurringDialogOpen(false);
     setPendingDeleteEvent(null);
