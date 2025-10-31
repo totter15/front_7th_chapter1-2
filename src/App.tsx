@@ -74,6 +74,32 @@ const repeatTypeOptions: Array<{ value: RepeatType; label: string }> = [
   { value: 'yearly', label: '매년' },
 ];
 
+// 이벤트 아이템 렌더링 헬퍼 함수
+const renderEventItem = (event: Event, isNotified: boolean, isRepeating: boolean) => (
+  <Box
+    key={event.id}
+    sx={{
+      p: 0.5,
+      my: 0.5,
+      backgroundColor: isNotified ? '#ffebee' : '#f5f5f5',
+      borderRadius: 1,
+      fontWeight: isNotified ? 'bold' : 'normal',
+      color: isNotified ? '#d32f2f' : 'inherit',
+      minHeight: '18px',
+      width: '100%',
+      overflow: 'hidden',
+    }}
+  >
+    <Stack direction="row" spacing={1} alignItems="center">
+      {isNotified && <Notifications fontSize="small" />}
+      {isRepeating && <Repeat fontSize="small" aria-label="반복 일정" />}
+      <Typography variant="caption" noWrap sx={{ fontSize: '0.75rem', lineHeight: 1.2 }}>
+        {event.title}
+      </Typography>
+    </Stack>
+  </Box>
+);
+
 function App() {
   const {
     title,
@@ -209,34 +235,7 @@ function App() {
                       .map((event) => {
                         const isNotified = notifiedEvents.includes(event.id);
                         const isRepeating = event.repeat.type !== 'none';
-                        return (
-                          <Box
-                            key={event.id}
-                            sx={{
-                              p: 0.5,
-                              my: 0.5,
-                              backgroundColor: isNotified ? '#ffebee' : '#f5f5f5',
-                              borderRadius: 1,
-                              fontWeight: isNotified ? 'bold' : 'normal',
-                              color: isNotified ? '#d32f2f' : 'inherit',
-                              minHeight: '18px',
-                              width: '100%',
-                              overflow: 'hidden',
-                            }}
-                          >
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              {isNotified && <Notifications fontSize="small" />}
-                              {isRepeating && <Repeat fontSize="small" aria-label="반복 일정" />}
-                              <Typography
-                                variant="caption"
-                                noWrap
-                                sx={{ fontSize: '0.75rem', lineHeight: 1.2 }}
-                              >
-                                {event.title}
-                              </Typography>
-                            </Stack>
-                          </Box>
-                        );
+                        return renderEventItem(event, isNotified, isRepeating);
                       })}
                   </TableCell>
                 ))}
@@ -298,36 +297,7 @@ function App() {
                             {getEventsForDay(filteredEvents, day).map((event) => {
                               const isNotified = notifiedEvents.includes(event.id);
                               const isRepeating = event.repeat.type !== 'none';
-                              return (
-                                <Box
-                                  key={event.id}
-                                  sx={{
-                                    p: 0.5,
-                                    my: 0.5,
-                                    backgroundColor: isNotified ? '#ffebee' : '#f5f5f5',
-                                    borderRadius: 1,
-                                    fontWeight: isNotified ? 'bold' : 'normal',
-                                    color: isNotified ? '#d32f2f' : 'inherit',
-                                    minHeight: '18px',
-                                    width: '100%',
-                                    overflow: 'hidden',
-                                  }}
-                                >
-                                  <Stack direction="row" spacing={1} alignItems="center">
-                                    {isNotified && <Notifications fontSize="small" />}
-                                    {isRepeating && (
-                                      <Repeat fontSize="small" aria-label="반복 일정" />
-                                    )}
-                                    <Typography
-                                      variant="caption"
-                                      noWrap
-                                      sx={{ fontSize: '0.75rem', lineHeight: 1.2 }}
-                                    >
-                                      {event.title}
-                                    </Typography>
-                                  </Stack>
-                                </Box>
-                              );
+                              return renderEventItem(event, isNotified, isRepeating);
                             })}
                           </>
                         )}

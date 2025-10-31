@@ -91,7 +91,7 @@
 
 - [x] Red: 실패하는 테스트 추가 (Test Code Agent)
 - [x] Green: 최소 구현으로 통과 (Implementation Agent)
-- [ ] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
+- [x] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
 
 ---
 
@@ -197,13 +197,33 @@
 - Outputs: 리팩토링 포인트/전후 비교
 - Safeguard: 모든 테스트 Green 유지
   <!-- REFACTORING_START -->
-  (자동 기록)
+  - Inputs:
+    - Green 상태 코드: 반복 아이콘 표시 기능 구현 완료
+    - 중복 코드 식별: 월 뷰와 주 뷰에서 동일한 이벤트 아이템 렌더링 로직 중복
+  - Actions:
+    - 중복 코드 제거: 월 뷰와 주 뷰에서 사용하는 이벤트 아이템 렌더링 로직을 `renderEventItem` 헬퍼 함수로 추출
+    - 함수 추출: `renderEventItem(event: Event, isNotified: boolean, isRepeating: boolean)` 함수 생성
+      - 이벤트 아이템의 Box, Stack, 아이콘, Typography 렌더링 로직을 재사용 가능한 함수로 분리
+      - 접근성 속성(`aria-label="반복 일정"`) 유지
+    - 코드 일관성 향상: 두 뷰에서 동일한 로직 사용으로 유지보수성 개선
+  - Outputs:
+    - 테스트 실행 및 Green 상태 확인: TC-01 ~ TC-04 모두 통과 (20개 테스트 전체 통과)
+    - 코드 변경 사항:
+      - `renderEventItem` 헬퍼 함수 추가 (App.tsx 상단, repeatTypeOptions 다음)
+      - `renderWeekView`에서 중복 코드 제거 및 `renderEventItem` 사용
+      - `renderMonthView`에서 중복 코드 제거 및 `renderEventItem` 사용
+    - 코드 품질 개선:
+      - 중복 코드 제거로 DRY 원칙 준수
+      - 함수 추출로 가독성 향상
+      - 동작은 동일하게 유지 (Behavior Preserving)
+    - 변경 파일: `src/App.tsx`
+  - Artifacts: `src/App.tsx`
   <!-- REFACTORING_END -->
 
 ---
 
 ## 🧾 요약 (Summary)
 
-- 상태: `코드 작성(GREEN) 완료`
-- 마지막 수정 에이전트: `코드 작성 에이전트`
-- 주요 변경사항 요약: 반복 일정 아이콘 표시 기능 구현 완료. Material UI Repeat 아이콘을 월/주 뷰에 조건부 렌더링 추가 (반복 일정인 경우에만 표시). 접근성 속성(`aria-label="반복 일정"`) 추가. 테스트 실행 결과: TC-01 ~ TC-04 모두 통과 (20개 테스트 전체 통과). 변경 파일: `src/App.tsx`
+- 상태: `리팩토링 완료`
+- 마지막 수정 에이전트: `리팩토링 에이전트`
+- 주요 변경사항 요약: 반복 일정 아이콘 표시 기능 리팩토링 완료. 월 뷰와 주 뷰에서 중복된 이벤트 아이템 렌더링 로직을 `renderEventItem` 헬퍼 함수로 추출하여 중복 제거 및 가독성 향상. 동작은 동일하게 유지 (Behavior Preserving). 테스트 실행 결과: TC-01 ~ TC-04 모두 통과 (20개 테스트 전체 통과). 변경 파일: `src/App.tsx`
