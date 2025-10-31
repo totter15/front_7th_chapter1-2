@@ -141,8 +141,9 @@ function App() {
     editEvent,
   } = useEventForm();
 
-  const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
-    setEditingEvent(null)
+  const { events, saveEvent, deleteEvent, deleteRecurringSeries } = useEventOperations(
+    Boolean(editingEvent),
+    () => setEditingEvent(null)
   );
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
@@ -158,7 +159,7 @@ function App() {
   const [isEditRecurringDialogOpen, setIsEditRecurringDialogOpen] = useState(false);
   const [pendingEditEvent, setPendingEditEvent] = useState<Event | null>(null);
   const [isDeleteRecurringDialogOpen, setIsDeleteRecurringDialogOpen] = useState(false);
-  const [pendingDeleteEventId, setPendingDeleteEventId] = useState<string | null>(null);
+  const [pendingDeleteEvent, setPendingDeleteEvent] = useState<Event | null>(null);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -199,7 +200,7 @@ function App() {
     const event = events.find((e) => e.id === eventId);
     // 반복 일정이면 다이얼로그 표시
     if (event && event.repeat.type !== 'none') {
-      setPendingDeleteEventId(eventId);
+      setPendingDeleteEvent(event);
       setIsDeleteRecurringDialogOpen(true);
     } else {
       // 단일 일정은 바로 삭제
@@ -208,22 +209,21 @@ function App() {
   };
 
   const handleDeleteSingleOccurrence = () => {
-    if (pendingDeleteEventId) {
-      // 단일 인스턴스만 삭제 - 현재는 구현되지 않음 (RED)
-      // TODO: exceptions 처리 필요
-      deleteEvent(pendingDeleteEventId);
+    if (pendingDeleteEvent) {
+      deleteEvent(pendingDeleteEvent.id);
     }
     setIsDeleteRecurringDialogOpen(false);
-    setPendingDeleteEventId(null);
+    setPendingDeleteEvent(null);
   };
 
   const handleDeleteAllOccurrences = () => {
-    if (pendingDeleteEventId) {
-      // 전체 시리즈 삭제
-      deleteEvent(pendingDeleteEventId);
+    if (pendingDeleteEvent) {
+      // 전체 시리즈 삭제: baseId가 있으면 사용, 없으면 id 사용
+      const baseId = (pendingDeleteEvent as unknown as { baseId?: string }).baseId;
+      deleteRecurringSeries(baseId ?? pendingDeleteEvent.id);
     }
     setIsDeleteRecurringDialogOpen(false);
-    setPendingDeleteEventId(null);
+    setPendingDeleteEvent(null);
   };
 
   const addOrUpdateEvent = async () => {
@@ -752,7 +752,7 @@ function App() {
         open={isDeleteRecurringDialogOpen}
         onClose={() => {
           setIsDeleteRecurringDialogOpen(false);
-          setPendingDeleteEventId(null);
+          setPendingDeleteEvent(null);
         }}
       >
         <DialogTitle>반복 일정 삭제</DialogTitle>

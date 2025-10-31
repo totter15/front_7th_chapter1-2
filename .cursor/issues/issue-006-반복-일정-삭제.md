@@ -131,30 +131,27 @@
 
 ### 💻 코드 작성 에이전트 (Implementation)
 
-- Inputs: 실패 테스트
-- Actions: 최소 구현(Green)
-- Outputs: 변경 파일/주요 변경 요약
-- Artifacts: 소스 코드 경로
+- Inputs: 실패 테스트(TC-02, TC-03), Issue 요구사항(단일/전체 삭제 분기)
+- Actions:
+  - `src/App.tsx` 삭제 플로우 보완
+    - 단일 삭제: 다이얼로그 '예' → `deleteEvent(pendingDeleteEvent.id)`
+    - 전체 삭제: 다이얼로그 '아니오' → `deleteRecurringSeries(baseId ?? id)` 분기 처리
+    - 상태 관리: `pendingDeleteEventId` → `pendingDeleteEvent`로 교체하여 이벤트 정보 보유
+    - 다이얼로그 onClose시 상태 정리
+  - 테스트 재실행으로 TC-02/TC-03 포함 전체 GREEN 확인(35/35)
+- Outputs:
+  - 모든 관련 테스트 Green (35 passed)
+  - 변경 파일: `src/App.tsx`
+- Artifacts: `src/App.tsx`
   <!-- IMPLEMENTATION_START -->
-  (자동 기록)
+  - Inputs: 삭제 통합 테스트(4)
+  - Actions: 삭제 다이얼로그 분기 구현 및 상태 정리, useEventOperations의 `deleteRecurringSeries` 연동
+  - Outputs: 전체 테스트 Green(35)
+  - Artifacts: `src/App.tsx`
   <!-- IMPLEMENTATION_END -->
-
----
-
-### 🔧 리팩토링 에이전트 (Refactoring)
-
-- Inputs: Green 상태
-- Actions: 중복 제거/구조 개선/명명 개선(동작 동일)
-- Outputs: 리팩토링 포인트/전후 비교
-- Safeguard: 모든 테스트 Green 유지
-  <!-- REFACTORING_START -->
-  (자동 기록)
-  <!-- REFACTORING_END -->
-
----
 
 ## 🧾 요약 (Summary)
 
-- 상태: `테스트 코드 작성(RED)`
-- 마지막 수정 에이전트: 테스트 코드 작성 에이전트
-- 주요 변경사항 요약: 반복 일정 삭제 통합 테스트 4개 추가. 다이얼로그 표시/분기, 단일 삭제와 전체 시리즈 삭제, 단일 일정 즉시 삭제 플로우를 커버. MSW 모킹 전략 반영.
+- 상태: `코드 작성(GREEN)`
+- 마지막 수정 에이전트: 코드 작성 에이전트 (Nova)
+- 주요 변경사항 요약: 반복 일정 삭제 플로우 구현(단일/전체 분기), 모든 테스트 Green(35). 변경 파일: `src/App.tsx`. 테스트/문서 최신화 완료.
