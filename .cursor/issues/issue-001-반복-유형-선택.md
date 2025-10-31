@@ -109,7 +109,7 @@
 ## 🔁 TDD 사이클 (Red → Green → Refactor)
 
 - [x] Red: 실패하는 테스트 추가 (Test Code Agent)
-- [ ] Green: 최소 구현으로 통과 (Implementation Agent)
+- [x] Green: 최소 구현으로 통과 (Implementation Agent)
 - [ ] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
 
 ---
@@ -166,7 +166,28 @@
 - Outputs: 변경 파일/주요 변경 요약
 - Artifacts: 소스 코드 경로
   <!-- IMPLEMENTATION_START -->
-  (자동 기록)
+  - Inputs: 실패 테스트(TC-01, TC-02, TC-05), Issue 요구사항(반복 유형 선택 UI, 겹침 검사 제외)
+  - Actions:
+    - RepeatType import 활성화: App.tsx에서 RepeatType import 주석 해제
+    - setRepeatType 활성화: useEventForm 훅에서 setRepeatType 주석 해제 및 사용 가능하도록 변경
+    - 반복 유형 선택 UI 활성화: App.tsx 441-478줄 주석 처리된 반복 유형 선택 UI 주석 해제 및 활성화
+    - 접근성 속성 추가: FormLabel에 htmlFor, Select에 id 및 aria-label 추가
+    - 겹침 검사 예외 처리: addOrUpdateEvent 함수에서 반복일정(repeat.type !== 'none')인 경우 겹침 검사 생략하도록 로직 추가
+  - Outputs:
+    - 테스트 실행 및 Green 상태 확인 완료:
+      - TC-01: 통과 ✓ (반복 유형 UI 노출 및 상호작용)
+      - TC-02: 통과 ✓ (6개 테스트 모두 통과, isRepeating 초기 상태 버그 수정)
+      - TC-05: 통과 ✓ (반복일정 겹침 검사 제외)
+    - 코드 수정 사항:
+      - useEventForm.ts: isRepeating 초기 상태 로직 수정 (initialEvent가 없을 때 false로 설정)
+    - 코드 변경 사항 검증:
+      - RepeatType import 활성화 ✓
+      - setRepeatType 활성화 및 사용 가능 ✓
+      - 반복 유형 선택 UI 주석 해제 및 활성화 ✓
+      - 접근성 속성(aria-label, htmlFor, id) 추가 ✓
+      - 겹침 검사 예외 처리 로직 추가 ✓
+    - 변경 파일: src/App.tsx (반복 유형 UI 활성화, 겹침 검사 예외 처리), src/hooks/useEventForm.ts (isRepeating 초기 상태 수정)
+  - Artifacts: src/App.tsx
   <!-- IMPLEMENTATION_END -->
 
 ---
@@ -185,6 +206,6 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `테스트 코드 작성(RED)`
-- 마지막 수정 에이전트: 테스트 코드 작성 에이전트(Quinn)
-- 주요 변경사항 요약: 반복 유형 선택 기능 실패 테스트 작성 완료(RED 단계). TC-01/TC-05 Integration 테스트(medium.integration.spec.tsx), TC-02 Hook 테스트(hooks/medium.useEventForm.spec.ts) 작성. TC-03/TC-04는 반복 일정 생성 유틸리티 함수 부재로 보류. 테스트 실행 시 RED 상태 확인 예상(UI 주석 처리, 겹침 검사 예외 처리 미구현).
+- 상태: `코드 작성(GREEN) 완료`
+- 마지막 수정 에이전트: 코드 작성 에이전트(Nova)
+- 주요 변경사항 요약: 반복 유형 선택 기능 최소 구현 완료 및 테스트 Green 상태 확인. App.tsx에서 반복 유형 선택 UI 활성화(RepeatType import, setRepeatType 활성화, 주석 처리된 UI 코드 활성화), 겹침 검사에서 반복일정 예외 처리 추가. useEventForm.ts에서 isRepeating 초기 상태 버그 수정. TC-01/TC-02/TC-05 모든 테스트 통과 확인 완료. 변경 파일: src/App.tsx, src/hooks/useEventForm.ts.
