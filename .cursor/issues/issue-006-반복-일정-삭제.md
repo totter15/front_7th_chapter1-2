@@ -150,8 +150,26 @@
   - Artifacts: `src/App.tsx`
   <!-- IMPLEMENTATION_END -->
 
+### 🔧 리팩토링 에이전트 (Refactoring)
+
+- Inputs: Green 상태(35 tests passed), 삭제 분기 로직 가독성 개선 필요
+- Actions:
+  - 시리즈 식별자 해석 함수 추출: `resolveRecurringSeriesId(event)`
+  - `handleDeleteAllOccurrences`에서 식별자 분기 로직 제거하고 헬퍼 사용
+  - 동작 동일 유지, 타입 안전성·가독성 향상
+- Outputs:
+  - 중복/캐스팅 로직 축소, 코드 명확성 개선
+  - 모든 테스트 Green 유지
+- Artifacts: `src/App.tsx`
+  <!-- REFACTORING_START -->
+  - Inputs: 삭제 분기 로직 단순화 필요
+  - Actions: `resolveRecurringSeriesId` 헬퍼 추가 및 호출부 치환
+  - Outputs: 테스트 전부 Green 유지(35)
+  - Artifacts: `src/App.tsx`
+  <!-- REFACTORING_END -->
+
 ## 🧾 요약 (Summary)
 
-- 상태: `코드 작성(GREEN)`
-- 마지막 수정 에이전트: 코드 작성 에이전트 (Nova)
-- 주요 변경사항 요약: 반복 일정 삭제 플로우 구현(단일/전체 분기), 모든 테스트 Green(35). 변경 파일: `src/App.tsx`. 테스트/문서 최신화 완료.
+- 상태: `리팩토링`
+- 마지막 수정 에이전트: 리팩토링 에이전트
+- 주요 변경사항 요약: 삭제 시리즈 식별자 해석 헬퍼 추가로 분기 단순화. 모든 테스트 Green 유지(35). 변경 파일: `src/App.tsx`.
