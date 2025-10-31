@@ -1158,3 +1158,190 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
     expect(screen.getByLabelText('제목')).toHaveValue('단일 회의');
   });
 });
+
+describe('반복 일정 삭제 (SC-01 ~ SC-04)', () => {
+  // TC-01: 반복 일정 삭제 다이얼로그 표시
+  it('TC-01: 반복 일정에서 삭제 버튼 클릭 시 다이얼로그가 표시된다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: 'r-1',
+        title: '반복 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '매주 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        notificationTime: 10,
+      },
+    ];
+
+    server.use(
+      http.get('/api/events', () => HttpResponse.json({ events: mockEvents }))
+    );
+
+    const { user } = setup(<App />);
+    await screen.findByText('일정 로딩 완료!');
+
+    const deleteButton = await screen.findByLabelText('Delete event');
+    await user.click(deleteButton);
+
+    expect(screen.getByText('반복 일정 삭제')).toBeInTheDocument();
+    expect(screen.getByText('해당 일정만 삭제하시겠어요?')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '예' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '아니오' })).toBeInTheDocument();
+  });
+
+  // TC-02: '예' 선택 시 단일 인스턴스 삭제
+  it("TC-02: '예' 선택 시 해당 일정만 삭제된다 (다른 시리즈 일정 유지)", async () => {
+    // 두 개의 반복 인스턴스를 같은 시리즈로 가정 (동일 baseId라고 가정)
+    const mockEvents: Event[] = [
+      {
+        id: 'r-1',
+        title: '반복 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '매주 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        notificationTime: 10,
+      },
+      {
+        id: 'r-2',
+        title: '반복 회의',
+        date: '2025-10-22',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '매주 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        notificationTime: 10,
+      },
+    ];
+
+    server.use(
+      http.get('/api/events', () => HttpResponse.json({ events: mockEvents })),
+      http.delete('/api/events/:id', ({ params }) => {
+        const { id } = params as { id: string };
+        const idx = mockEvents.findIndex((e) => e.id === id);
+        if (idx !== -1) mockEvents.splice(idx, 1);
+        return new HttpResponse(null, { status: 204 });
+      })
+    );
+
+    const { user } = setup(<App />);
+    await screen.findByText('일정 로딩 완료!');
+
+    // 삭제 버튼 클릭 → 다이얼로그에서 '예'
+    const deleteButton = await screen.findByLabelText('Delete event');
+    await user.click(deleteButton);
+    await user.click(screen.getByRole('button', { name: '예' }));
+
+    // 목록에 같은 시리즈의 다른 인스턴스는 남아 있어야 함
+    const list = screen.getByTestId('event-list');
+    // 남아있는 동일 제목이 최소 1개 이상 존재
+    expect(within(list).getAllByText('반복 회의').length).toBeGreaterThan(0);
+  });
+
+  // TC-03: '아니오' 선택 시 전체 시리즈 삭제
+  it("TC-03: '아니오' 선택 시 전체 시리즈가 삭제된다", async () => {
+    // 같은 시리즈 2개를 시드하고 전체 삭제 엔드포인트를 모킹
+    const baseId = 'series-1';
+    const mockEvents: (Event & { baseId?: string })[] = [
+      {
+        id: 'r-1',
+        title: '반복 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '매주 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        notificationTime: 10,
+        baseId,
+      },
+      {
+        id: 'r-2',
+        title: '반복 회의',
+        date: '2025-10-22',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '매주 반복 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        notificationTime: 10,
+        baseId,
+      },
+    ];
+
+    server.use(
+      http.get('/api/events', () => HttpResponse.json({ events: mockEvents })),
+      http.delete('/api/recurring-events/:baseId', ({ params }) => {
+        const { baseId: bid } = params as { baseId: string };
+        for (let i = mockEvents.length - 1; i >= 0; i -= 1) {
+          if ((mockEvents[i] as any).baseId === bid) mockEvents.splice(i, 1);
+        }
+        return new HttpResponse(null, { status: 204 });
+      })
+    );
+
+    const { user } = setup(<App />);
+    await screen.findByText('일정 로딩 완료!');
+
+    // 삭제 버튼 클릭 → '아니오'
+    const deleteButton = await screen.findByLabelText('Delete event');
+    await user.click(deleteButton);
+    await user.click(screen.getByRole('button', { name: '아니오' }));
+
+    // 동일 시리즈 일정이 모두 제거되어 목록에서 해당 제목이 존재하지 않아야 함
+    const list = screen.getByTestId('event-list');
+    expect(within(list).queryByText('반복 회의')).not.toBeInTheDocument();
+  });
+
+  // TC-04: 단일 일정 삭제 시 다이얼로그 미표시
+  it('TC-04: 단일 일정(repeat.type="none")은 다이얼로그 없이 즉시 삭제된다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: 's-1',
+        title: '단일 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '단일',
+        location: '회의실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+
+    server.use(
+      http.get('/api/events', () => HttpResponse.json({ events: mockEvents })),
+      http.delete('/api/events/:id', ({ params }) => {
+        const { id } = params as { id: string };
+        const idx = mockEvents.findIndex((e) => e.id === id);
+        if (idx !== -1) mockEvents.splice(idx, 1);
+        return new HttpResponse(null, { status: 204 });
+      })
+    );
+
+    const { user } = setup(<App />);
+    await screen.findByText('일정 로딩 완료!');
+
+    const deleteButton = await screen.findByLabelText('Delete event');
+    await user.click(deleteButton);
+
+    // 다이얼로그 미표시
+    expect(screen.queryByText('해당 일정만 삭제하시겠어요?')).not.toBeInTheDocument();
+
+    // 목록에서 해당 제목이 바로 사라지는지 확인 (모킹된 삭제 후 재조회 가정)
+    const list = screen.getByTestId('event-list');
+    expect(within(list).queryByText('단일 회의')).not.toBeInTheDocument();
+  });
+});
