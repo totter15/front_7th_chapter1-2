@@ -192,12 +192,21 @@
 
 ### 💻 코드 작성 에이전트 (Implementation)
 
-- Inputs: 실패 테스트
-- Actions: 최소 구현(Green)
-- Outputs: 변경 파일/주요 변경 요약
-- Artifacts: 소스 코드 경로
+- Inputs: 실패 테스트(TC-03, TC-05), Issue 요구사항(반복 아이콘 표시/유지 규칙)
+- Actions:
+  - `src/App.tsx`의 event-list(좌측 리스트) 섹션에 반복 아이콘 추가
+    - 조건: `event.repeat.type !== 'none'`
+    - 접근성: `aria-label="반복 일정"`, `title="반복 일정"` 부여
+  - 테스트 재실행으로 TC-03/TC-05 Green 확인
+- Outputs:
+  - 모든 관련 테스트 Green (31 passed)
+  - 변경 파일: `src/App.tsx`
+- Artifacts: `src/App.tsx`
   <!-- IMPLEMENTATION_START -->
-  (자동 기록)
+  - Inputs: TC-03/TC-05 실패, 반복 아이콘 표시 요구사항
+  - Actions: event-list에 Repeat 아이콘 및 접근성 라벨 추가
+  - Outputs: 통합 테스트 31개 모두 Green
+  - Artifacts: `src/App.tsx`
   <!-- IMPLEMENTATION_END -->
 
 ---
@@ -216,6 +225,6 @@
 
 ## 🧾 요약 (Summary)
 
-- 상태: `테스트 코드 작성(RED)`
-- 마지막 수정 에이전트: 테스트 코드 작성 에이전트 (Quinn)
-- 주요 변경사항 요약: 테스트 코드 작성 완료 (RED 단계). 6개 통합 테스트 작성 완료 (`src/__tests__/medium.integration.spec.tsx` 823-1161줄). 반복 일정 수정 다이얼로그, '예'/'아니오' 선택 시 동작, 반복 아이콘 변화, 단일 일정 처리 등 모든 시나리오 커버. 접근성 우선 쿼리 사용, Lint 오류 없음. 테스트 체크리스트 모두 통과.
+- 상태: `코드 작성(GREEN)`
+- 마지막 수정 에이전트: 코드 작성 에이전트 (Nova)
+- 주요 변경사항 요약: event-list에 반복 아이콘을 표시하도록 구현(`aria-label="반복 일정"`, `title="반복 일정"`). TC-03(아이콘 제거) / TC-05(아이콘 유지) 포함 6개 시나리오 모두 Green. 변경 파일: `src/App.tsx`. 테스트 31개 통과 확인.
