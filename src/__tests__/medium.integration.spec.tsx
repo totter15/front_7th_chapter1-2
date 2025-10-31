@@ -1177,15 +1177,13 @@ describe('반복 일정 삭제 (SC-01 ~ SC-04)', () => {
       },
     ];
 
-    server.use(
-      http.get('/api/events', () => HttpResponse.json({ events: mockEvents }))
-    );
+    server.use(http.get('/api/events', () => HttpResponse.json({ events: mockEvents })));
 
     const { user } = setup(<App />);
     await screen.findByText('일정 로딩 완료!');
 
-    const deleteButton = await screen.findByLabelText('Delete event');
-    await user.click(deleteButton);
+    const deleteButtons = await screen.findAllByLabelText('Delete event');
+    await user.click(deleteButtons[0]);
 
     expect(screen.getByText('반복 일정 삭제')).toBeInTheDocument();
     expect(screen.getByText('해당 일정만 삭제하시겠어요?')).toBeInTheDocument();
@@ -1237,8 +1235,8 @@ describe('반복 일정 삭제 (SC-01 ~ SC-04)', () => {
     await screen.findByText('일정 로딩 완료!');
 
     // 삭제 버튼 클릭 → 다이얼로그에서 '예'
-    const deleteButton = await screen.findByLabelText('Delete event');
-    await user.click(deleteButton);
+    const deleteButtons = await screen.findAllByLabelText('Delete event');
+    await user.click(deleteButtons[0]);
     await user.click(screen.getByRole('button', { name: '예' }));
 
     // 목록에 같은 시리즈의 다른 인스턴스는 남아 있어야 함
@@ -1295,8 +1293,8 @@ describe('반복 일정 삭제 (SC-01 ~ SC-04)', () => {
     await screen.findByText('일정 로딩 완료!');
 
     // 삭제 버튼 클릭 → '아니오'
-    const deleteButton = await screen.findByLabelText('Delete event');
-    await user.click(deleteButton);
+    const deleteButtons = await screen.findAllByLabelText('Delete event');
+    await user.click(deleteButtons[0]);
     await user.click(screen.getByRole('button', { name: '아니오' }));
 
     // 동일 시리즈 일정이 모두 제거되어 목록에서 해당 제목이 존재하지 않아야 함
