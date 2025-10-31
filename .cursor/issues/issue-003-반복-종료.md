@@ -87,8 +87,8 @@
 ## 🔁 TDD 사이클 (Red → Green → Refactor)
 
 - [x] Red: 실패하는 테스트 추가 (Test Code Agent)
-- [ ] Green: 최소 구현으로 통과 (Implementation Agent)
-- [ ] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
+- [x] Green: 최소 구현으로 통과 (Implementation Agent)
+- [x] Refactor: 동작 동일, 구조/가독성 개선 (Refactoring Agent)
 
 ---
 
@@ -154,7 +154,22 @@
 - Outputs: 변경 파일/주요 변경 요약
 - Artifacts: 소스 코드 경로
   <!-- IMPLEMENTATION_START -->
-  (자동 기록)
+  - Inputs:
+    - 실패 테스트: TC-01, TC-02, TC-03 실패 (반복 종료일 필드가 반복 유형 선택 시에만 표시되어야 함)
+    - 기존 코드: App.tsx의 반복 종료일 필드가 isRepeating만 체크하고 있음
+  - Actions:
+    - 반복 종료일 필드 조건 수정: `repeatType !== 'none'` 조건 추가
+    - FormLabel과 TextField 연결: htmlFor와 id 속성 추가
+    - aria-label 제거: 중복 라벨 문제 해결
+    - 테스트 실행 및 검증: 모든 테스트 통과 확인
+  - Outputs:
+    - 변경 파일: `src/App.tsx` (470-481줄)
+    - 주요 변경사항:
+      - 반복 종료일 필드를 `repeatType !== 'none'` 조건으로 감싸서 반복 유형 선택 시에만 표시
+      - FormLabel과 TextField 연결을 위한 htmlFor/id 속성 추가
+      - aria-label 제거하여 중복 라벨 문제 해결
+    - 테스트 실행 결과: 4개 테스트 모두 통과 (TC-01 ~ TC-04)
+  - Artifacts: `src/App.tsx`
   <!-- IMPLEMENTATION_END -->
 
 ---
@@ -166,13 +181,27 @@
 - Outputs: 리팩토링 포인트/전후 비교
 - Safeguard: 모든 테스트 Green 유지
   <!-- REFACTORING_START -->
-  (자동 기록)
+  - Inputs:
+    - Green 상태 코드 검토
+    - 현재 구현 코드 분석
+  - Actions:
+    - 코드 구조 검토: 조건부 렌더링, FormLabel/TextField 연결 상태 확인
+    - 리팩토링 포인트 검토: 일관성, 가독성, 구조 개선 여지 확인
+    - 테스트 실행 및 검증: 모든 테스트 통과 확인
+  - Outputs:
+    - 리팩토링 결정: 현재 코드가 이미 깔끔하고 명확하게 구현되어 있어 추가 리팩토링 불필요
+    - 리팩토링 포인트:
+      - 조건부 렌더링이 명확함 (`repeatType !== 'none'`)
+      - FormLabel과 TextField 연결이 적절함 (`htmlFor`/`id`)
+      - 구조가 일관적이고 가독성이 좋음
+    - 테스트 실행 결과: 4개 테스트 모두 통과 확인
+  - Safeguard: 모든 테스트 Green 유지 확인
   <!-- REFACTORING_END -->
 
 ---
 
 ## 🧾 요약 (Summary)
 
-- 상태: `테스트 코드 작성(RED)`
-- 마지막 수정 에이전트: `테스트 코드 에이전트`
-- 주요 변경사항 요약: 반복 종료일 지정 기능을 위한 실패하는 테스트 코드 작성 완료. Integration 테스트 4개 케이스 작성 (TC-01 ~ TC-04), 테스트 실행 결과 3개 실패 1개 통과 (TC-04). 실패 원인: 반복 종료일 필드가 반복 유형이 선택된 경우에만 표시되어야 하나 현재는 isRepeating만 체크하고 있음
+- 상태: `완료`
+- 마지막 수정 에이전트: `오케스트레이터`
+- 주요 변경사항 요약: 반복 종료일 지정 기능 완료. 사용자가 반복 일정 생성 시 종료일을 지정할 수 있도록 구현 완료. 반복 종료일 필드는 반복 유형이 선택된 경우에만 표시되며, 사용자가 자유롭게 날짜를 입력할 수 있음. TDD 사이클 완료 (RED → GREEN → Refactor), 모든 테스트 통과 (전체 131개, 반복 종료일 관련 4개)
