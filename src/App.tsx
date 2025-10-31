@@ -74,6 +74,13 @@ const repeatTypeOptions: Array<{ value: RepeatType; label: string }> = [
   { value: 'yearly', label: '매년' },
 ];
 
+// 반복 아이콘 배지
+const RepeatBadge = () => (
+  <span aria-label="반복 일정" title="반복 일정">
+    <Repeat fontSize="small" />
+  </span>
+);
+
 // 이벤트 아이템 렌더링 헬퍼 함수
 const renderEventItem = (event: Event, isNotified: boolean, isRepeating: boolean) => (
   <Box
@@ -92,11 +99,7 @@ const renderEventItem = (event: Event, isNotified: boolean, isRepeating: boolean
   >
     <Stack direction="row" spacing={1} alignItems="center">
       {isNotified && <Notifications fontSize="small" />}
-      {isRepeating && (
-        <span aria-label="반복 일정" title="반복 일정">
-          <Repeat fontSize="small" />
-        </span>
-      )}
+      {isRepeating && <RepeatBadge />}
       <Typography variant="caption" noWrap sx={{ fontSize: '0.75rem', lineHeight: 1.2 }}>
         {event.title}
       </Typography>
@@ -633,11 +636,7 @@ function App() {
                   <Stack>
                     <Stack direction="row" spacing={1} alignItems="center">
                       {notifiedEvents.includes(event.id) && <Notifications color="error" />}
-                      {event.repeat.type !== 'none' && (
-                        <span aria-label="반복 일정" title="반복 일정">
-                          <Repeat fontSize="small" />
-                        </span>
-                      )}
+                      {event.repeat.type !== 'none' && <RepeatBadge />}
                       <Typography
                         fontWeight={notifiedEvents.includes(event.id) ? 'bold' : 'normal'}
                         color={notifiedEvents.includes(event.id) ? 'error' : 'inherit'}

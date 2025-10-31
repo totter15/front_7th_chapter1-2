@@ -213,18 +213,26 @@
 
 ### 🔧 리팩토링 에이전트 (Refactoring)
 
-- Inputs: Green 상태
-- Actions: 중복 제거/구조 개선/명명 개선(동작 동일)
-- Outputs: 리팩토링 포인트/전후 비교
-- Safeguard: 모든 테스트 Green 유지
+- Inputs: Green 상태(31 tests passed), 중복된 반복 아이콘 렌더링 코드
+- Actions:
+  - `RepeatBadge` 컴포넌트 추출
+  - 월/주 뷰의 `renderEventItem` 및 좌측 event-list에서 반복 아이콘 렌더링을 `RepeatBadge`로 통일
+  - 접근성 표준 유지(aria-label/title 유지)
+- Outputs:
+  - 중복 제거 및 일관된 렌더링 구현
+  - 모든 테스트 Green 유지
+- Artifacts: `src/App.tsx`
   <!-- REFACTORING_START -->
-  (자동 기록)
+  - Inputs: 반복 아이콘 렌더링 중복
+  - Actions: `RepeatBadge` 추출, 두 위치에서 공통 사용
+  - Outputs: 테스트 전부 Green 유지(31)
+  - Artifacts: `src/App.tsx`
   <!-- REFACTORING_END -->
 
 ---
 
 ## 🧾 요약 (Summary)
 
-- 상태: `코드 작성(GREEN)`
-- 마지막 수정 에이전트: 코드 작성 에이전트 (Nova)
-- 주요 변경사항 요약: event-list에 반복 아이콘을 표시하도록 구현(`aria-label="반복 일정"`, `title="반복 일정"`). TC-03(아이콘 제거) / TC-05(아이콘 유지) 포함 6개 시나리오 모두 Green. 변경 파일: `src/App.tsx`. 테스트 31개 통과 확인.
+- 상태: `리팩토링`
+- 마지막 수정 에이전트: 리팩토링 에이전트
+- 주요 변경사항 요약: 반복 아이콘 렌더링을 `RepeatBadge` 컴포넌트로 추출하여 중복 제거 및 일관성 확보. 모든 테스트 Green 유지(31개). 변경 파일: `src/App.tsx`.
