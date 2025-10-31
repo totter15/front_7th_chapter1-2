@@ -721,3 +721,89 @@ describe('반복 종료일 지정 (SC-01 ~ SC-04)', () => {
     expect(repeatEndDateField).not.toBeInTheDocument();
   });
 });
+
+describe('반복 일정 생성 (SC-01 ~ SC-05)', () => {
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  const setupMockHandlerForRecurringEvents = () => {
+    const mockEvents: Event[] = [];
+    let eventIdCounter = 1;
+
+    server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({ events: mockEvents });
+      }),
+      http.post('/api/events-list', async ({ request }) => {
+        const body = (await request.json()) as { events: Event[] };
+        const newEvents = body.events.map((event) => ({
+          ...event,
+          id: String(eventIdCounter++),
+        }));
+        mockEvents.push(...newEvents);
+        return HttpResponse.json(newEvents, { status: 201 });
+      })
+    );
+
+    return mockEvents;
+  };
+
+  it('TC-06: 반복 일정 생성 통합 테스트 - 매일 반복 일정이 종료일까지 생성된다', async () => {
+    const mockEvents = setupMockHandlerForRecurringEvents();
+
+    const { user } = setup(<App />);
+
+    // 일정 생성 폼 열기
+    await user.click(screen.getAllByText('일정 추가')[0]);
+
+    // 기본 일정 정보 입력
+    await user.type(screen.getByLabelText('제목'), '매일 반복 회의');
+    await user.type(screen.getByLabelText('날짜'), '2025-10-15');
+    await user.type(screen.getByLabelText('시작 시간'), '09:00');
+    await user.type(screen.getByLabelText('종료 시간'), '10:00');
+    await user.type(screen.getByLabelText('설명'), '설명');
+    await user.type(screen.getByLabelText('위치'), '회의실 A');
+    await user.click(screen.getByLabelText('카테고리'));
+    await user.click(within(screen.getByLabelText('카테고리')).getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: '업무-option' }));
+
+    // 반복 일정 설정
+    await user.click(screen.getByLabelText('반복 일정'));
+    const repeatTypeSelect = screen.getByLabelText('반복 유형');
+    await user.click(repeatTypeSelect);
+    await user.click(within(repeatTypeSelect).getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: '매일' }));
+
+    // 반복 종료일 입력
+    const repeatEndDateField = screen.getByLabelText('반복 종료일');
+    await user.type(repeatEndDateField, '2025-10-20');
+
+    // 일정 저장
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // 저장 완료 대기
+    await screen.findByText('일정이 추가되었습니다.');
+
+    // 생성된 일정 개수 확인 (2025-10-15부터 2025-10-20까지 6개)
+    await screen.findByText('일정 로딩 완료!');
+
+    // 매일 반복 일정이 6개 생성되었는지 확인
+    const dailyEvents = mockEvents.filter(
+      (event) =>
+        event.title === '매일 반복 회의' && event.date >= '2025-10-15' && event.date <= '2025-10-20'
+    );
+    expect(dailyEvents).toHaveLength(6);
+
+    // 날짜 순서 확인
+    const dates = dailyEvents.map((e) => e.date).sort();
+    expect(dates).toEqual([
+      '2025-10-15',
+      '2025-10-16',
+      '2025-10-17',
+      '2025-10-18',
+      '2025-10-19',
+      '2025-10-20',
+    ]);
+  });
+});
