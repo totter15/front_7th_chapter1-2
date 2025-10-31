@@ -1,5 +1,4 @@
 import { EventForm } from '../../types';
-// @ts-expect-error - generateRecurringEvents 함수는 구현 단계에서 추가됨
 import { generateRecurringEvents } from '../../utils/eventUtils';
 
 describe('generateRecurringEvents', () => {

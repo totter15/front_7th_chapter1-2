@@ -116,6 +116,7 @@ describe('일정 CRUD 및 기본 기능', () => {
 describe('일정 뷰', () => {
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     // ! 현재 시스템 시간 2025-10-01
+    setupMockHandlerCreation();
     const { user } = setup(<App />);
 
     await user.click(within(screen.getByLabelText('뷰 타입 선택')).getByRole('combobox'));
@@ -151,6 +152,7 @@ describe('일정 뷰', () => {
 
   it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
     vi.setSystemTime(new Date('2025-01-01'));
+    setupMockHandlerCreation();
 
     setup(<App />);
 
@@ -504,7 +506,9 @@ describe('반복 일정 아이콘 표시 (SC-01 ~ SC-04)', () => {
     );
 
     const monthView = within(screen.getByTestId('month-view'));
-    const eventTitle = monthView.getByText('매주 팀 회의');
+    // 2025-10-02는 목요일이므로 2일 셀을 찾습니다
+    const dayCell = monthView.getByText('2').closest('td')!;
+    const eventTitle = within(dayCell).getByText('매주 팀 회의');
 
     // 반복 아이콘이 표시되는지 확인 (aria-label="반복 일정" 또는 data-testid 사용)
     const eventContainer = eventTitle.closest('div[class*="Box"]') || eventTitle.closest('div');
@@ -541,7 +545,9 @@ describe('반복 일정 아이콘 표시 (SC-01 ~ SC-04)', () => {
     await user.click(screen.getByRole('option', { name: 'week-option' }));
 
     const weekView = within(screen.getByTestId('week-view'));
-    const eventTitle = weekView.getByText('매일 아침 회의');
+    // 2025-10-02는 목요일이므로 2일 셀을 찾습니다
+    const dayCell = weekView.getByText('2').closest('td')!;
+    const eventTitle = within(dayCell).getByText('매일 아침 회의');
 
     // 반복 아이콘이 표시되는지 확인
     const eventContainer = eventTitle.closest('div[class*="Box"]') || eventTitle.closest('div');
@@ -608,7 +614,9 @@ describe('반복 일정 아이콘 표시 (SC-01 ~ SC-04)', () => {
     });
 
     const monthView = within(screen.getByTestId('month-view'));
-    const eventTitle = monthView.getByText('매주 알림 회의');
+    // 2025-10-02는 목요일이므로 2일 셀을 찾습니다
+    const dayCell = monthView.getByText('2').closest('td')!;
+    const eventTitle = within(dayCell).getByText('매주 알림 회의');
 
     // 반복 아이콘과 알림 아이콘이 모두 표시되는지 확인
     const eventContainer = eventTitle.closest('div[class*="Box"]') || eventTitle.closest('div');

@@ -1,12 +1,6 @@
 import { Event, EventForm } from '../types';
-import { formatDate, getWeekDates, isDateInRange } from './dateUtils';
-
-function filterEventsByDateRange(events: Event[], start: Date, end: Date): Event[] {
-  return events.filter((event) => {
-    const eventDate = new Date(event.date);
-    return isDateInRange(eventDate, start, end);
-  });
-}
+import { formatDate, getWeekDates } from './dateUtils';
+import { expandEventsWithinWindow } from './recurrence';
 
 function containsTerm(target: string, term: string) {
   return target.toLowerCase().includes(term.toLowerCase());
@@ -19,23 +13,11 @@ function searchEvents(events: Event[], term: string) {
   );
 }
 
-function filterEventsByDateRangeAtWeek(events: Event[], currentDate: Date) {
-  const weekDates = getWeekDates(currentDate);
-  return filterEventsByDateRange(events, weekDates[0], weekDates[6]);
-}
-
-function filterEventsByDateRangeAtMonth(events: Event[], currentDate: Date) {
-  const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const monthEnd = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0,
-    23,
-    59,
-    59,
-    999
-  );
-  return filterEventsByDateRange(events, monthStart, monthEnd);
+export function searchOriginalEvents(events: Event[], searchTerm: string): Event[] {
+  if (!searchTerm) {
+    return events;
+  }
+  return searchEvents(events, searchTerm);
 }
 
 export function getFilteredEvents(
@@ -44,15 +26,28 @@ export function getFilteredEvents(
   currentDate: Date,
   view: 'week' | 'month'
 ): Event[] {
-  const searchedEvents = searchEvents(events, searchTerm);
+  // 먼저 날짜 범위를 결정
+  let windowStart: Date;
+  let windowEnd: Date;
 
   if (view === 'week') {
-    return filterEventsByDateRangeAtWeek(searchedEvents, currentDate);
+    const weekDates = getWeekDates(currentDate);
+    windowStart = weekDates[0];
+    windowEnd = weekDates[6];
+  } else if (view === 'month') {
+    windowStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    windowEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
+  } else {
+    // view가 지정되지 않은 경우 (검색 전용)
+    const searchedEvents = searchEvents(events, searchTerm);
+    return searchedEvents;
   }
 
-  if (view === 'month') {
-    return filterEventsByDateRangeAtMonth(searchedEvents, currentDate);
-  }
+  // 반복 일정 확장
+  const expandedEvents = expandEventsWithinWindow(events, windowStart, windowEnd);
+
+  // 검색 필터링
+  const searchedEvents = searchEvents(expandedEvents, searchTerm);
 
   return searchedEvents;
 }
