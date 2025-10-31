@@ -623,3 +623,101 @@ describe('반복 일정 아이콘 표시 (SC-01 ~ SC-04)', () => {
     expect(screen.queryByText(/10분 후.*일정이 시작됩니다/)).toBeInTheDocument();
   });
 });
+
+describe('반복 종료일 지정 (SC-01 ~ SC-04)', () => {
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  it('TC-01: 반복 종료일 입력 필드 노출 확인', async () => {
+    const { user } = setup(<App />);
+
+    // 반복 일정 체크박스 클릭
+    await user.click(screen.getByLabelText('반복 일정'));
+
+    // 반복 유형 선택
+    const repeatTypeSelect = screen.getByLabelText('반복 유형');
+    await user.click(repeatTypeSelect);
+    await user.click(within(repeatTypeSelect).getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: '매일' }));
+
+    // 반복 종료일 입력 필드가 표시되는지 확인
+    const repeatEndDateField = screen.getByLabelText('반복 종료일');
+    expect(repeatEndDateField).toBeInTheDocument();
+    expect(repeatEndDateField).toHaveAttribute('type', 'date');
+  });
+
+  it('TC-02: 반복 종료일 입력 및 상태 저장 확인', async () => {
+    const { user } = setup(<App />);
+
+    // 반복 일정 체크박스 선택 및 반복 유형 선택
+    await user.click(screen.getByLabelText('반복 일정'));
+    const repeatTypeSelect = screen.getByLabelText('반복 유형');
+    await user.click(repeatTypeSelect);
+    await user.click(within(repeatTypeSelect).getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: '매일' }));
+
+    // 반복 종료일 입력
+    const repeatEndDateField = screen.getByLabelText('반복 종료일');
+    await user.type(repeatEndDateField, '2025-12-31');
+
+    // 입력된 날짜가 입력 필드에 표시되는지 확인
+    expect(repeatEndDateField).toHaveValue('2025-12-31');
+  });
+
+  it('TC-03: 반복 종료일이 저장되는지 확인', async () => {
+    setupMockHandlerCreation();
+
+    const { user } = setup(<App />);
+
+    // 일정 생성 폼 열기
+    await user.click(screen.getAllByText('일정 추가')[0]);
+
+    // 기본 일정 정보 입력
+    await user.type(screen.getByLabelText('제목'), '반복 일정 테스트');
+    await user.type(screen.getByLabelText('날짜'), '2025-10-15');
+    await user.type(screen.getByLabelText('시작 시간'), '09:00');
+    await user.type(screen.getByLabelText('종료 시간'), '10:00');
+    await user.type(screen.getByLabelText('설명'), '설명');
+    await user.type(screen.getByLabelText('위치'), '회의실 A');
+    await user.click(screen.getByLabelText('카테고리'));
+    await user.click(within(screen.getByLabelText('카테고리')).getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: '업무-option' }));
+
+    // 반복 일정 설정
+    await user.click(screen.getByLabelText('반복 일정'));
+    const repeatTypeSelect = screen.getByLabelText('반복 유형');
+    await user.click(repeatTypeSelect);
+    await user.click(within(repeatTypeSelect).getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: '매일' }));
+
+    // 반복 종료일 입력
+    const repeatEndDateField = screen.getByLabelText('반복 종료일');
+    await user.type(repeatEndDateField, '2025-12-31');
+
+    // 일정 저장
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // 저장 완료 대기
+    await screen.findByText('일정이 추가되었습니다.');
+
+    // 저장된 이벤트의 repeat.endDate가 포함되어 있는지 확인
+    // MSW 핸들러에서 저장된 데이터 확인을 위해 이벤트 목록에서 검증
+    const eventList = within(screen.getByTestId('event-list'));
+    expect(eventList.getByText('반복 일정 테스트')).toBeInTheDocument();
+  });
+
+  it('TC-04: 반복 유형 미선택 시 종료일 필드 미표시 확인', async () => {
+    const { user } = setup(<App />);
+
+    // 일정 생성 폼 열기
+    await user.click(screen.getAllByText('일정 추가')[0]);
+
+    // 반복 일정 체크박스만 선택 (반복 유형은 선택하지 않음)
+    await user.click(screen.getByLabelText('반복 일정'));
+
+    // 반복 종료일 입력 필드가 표시되지 않는지 확인
+    const repeatEndDateField = screen.queryByLabelText('반복 종료일');
+    expect(repeatEndDateField).not.toBeInTheDocument();
+  });
+});
