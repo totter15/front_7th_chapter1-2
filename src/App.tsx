@@ -59,6 +59,13 @@ const notificationOptions = [
   { value: 1440, label: '1일 전' },
 ];
 
+const repeatTypeOptions: Array<{ value: RepeatType; label: string }> = [
+  { value: 'daily', label: '매일' },
+  { value: 'weekly', label: '매주' },
+  { value: 'monthly', label: '매월' },
+  { value: 'yearly', label: '매년' },
+];
+
 function App() {
   const {
     title,
@@ -140,16 +147,18 @@ function App() {
     if (isRepeatingEvent) {
       await saveEvent(eventData);
       resetForm();
-    } else {
-      const overlapping = findOverlappingEvents(eventData, events);
-      if (overlapping.length > 0) {
-        setOverlappingEvents(overlapping);
-        setIsOverlapDialogOpen(true);
-      } else {
-        await saveEvent(eventData);
-        resetForm();
-      }
+      return;
     }
+
+    const overlapping = findOverlappingEvents(eventData, events);
+    if (overlapping.length > 0) {
+      setOverlappingEvents(overlapping);
+      setIsOverlapDialogOpen(true);
+      return;
+    }
+
+    await saveEvent(eventData);
+    resetForm();
   };
 
   const renderWeekView = () => {
@@ -455,10 +464,11 @@ function App() {
                   onChange={(e) => setRepeatType(e.target.value as RepeatType)}
                   aria-label="반복 유형"
                 >
-                  <MenuItem value="daily">매일</MenuItem>
-                  <MenuItem value="weekly">매주</MenuItem>
-                  <MenuItem value="monthly">매월</MenuItem>
-                  <MenuItem value="yearly">매년</MenuItem>
+                  {repeatTypeOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
               <Stack direction="row" spacing={2}>
