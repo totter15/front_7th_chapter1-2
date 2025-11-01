@@ -473,10 +473,10 @@ describe('반복 일정 아이콘 표시 (SC-01 ~ SC-04)', () => {
           repeatType === 'daily'
             ? '매일'
             : repeatType === 'weekly'
-            ? '매주'
-            : repeatType === 'monthly'
-            ? '매월'
-            : '매년',
+              ? '매주'
+              : repeatType === 'monthly'
+                ? '매월'
+                : '매년',
       })
     );
 
@@ -1000,7 +1000,12 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
         description: '매주 반복 회의',
         location: '회의실 A',
         category: '업무',
-        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15', id: 'series-1' } as any,
+        repeat: {
+          type: 'weekly',
+          interval: 1,
+          endDate: '2025-11-15',
+          id: 'series-1',
+        } as (typeof mockEvents)[0]['repeat'] & { id: string },
         notificationTime: 10,
         baseId: 'series-1',
       },
@@ -1026,11 +1031,22 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
         capturedRequestBody.current = updateData as Event;
         // 같은 repeatId를 가진 모든 이벤트 업데이트
         mockEvents.forEach((event, index) => {
-          if ((event.repeat as any).id === repeatId) {
+          const eventRepeat = event.repeat as {
+            type: string;
+            interval: number;
+            endDate?: string;
+            id?: string;
+          };
+          if (eventRepeat.id === repeatId) {
             mockEvents[index] = { ...event, ...updateData, repeat: event.repeat };
           }
         });
-        return HttpResponse.json(mockEvents.filter((e) => (e.repeat as any).id === repeatId));
+        return HttpResponse.json(
+          mockEvents.filter((e) => {
+            const r = e.repeat as { type: string; interval: number; endDate?: string; id?: string };
+            return r.id === repeatId;
+          })
+        );
       })
     );
 
@@ -1074,7 +1090,12 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
         description: '매주 반복 회의',
         location: '회의실 A',
         category: '업무',
-        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15', id: 'series-1' } as any,
+        repeat: {
+          type: 'weekly',
+          interval: 1,
+          endDate: '2025-11-15',
+          id: 'series-1',
+        } as (typeof mockEvents)[0]['repeat'] & { id: string },
         notificationTime: 10,
         baseId: 'series-1',
       },
@@ -1096,11 +1117,27 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
         const updateData = (await request.json()) as Partial<Event>;
         // 같은 repeatId를 가진 모든 이벤트 업데이트
         mockEvents.forEach((event, index) => {
-          if ((event.repeat as any).id === repeatId) {
+          const eventRepeat = event.repeat as {
+            type: string;
+            interval: number;
+            endDate?: string;
+            id?: string;
+          };
+          if (eventRepeat.id === repeatId) {
             mockEvents[index] = { ...event, ...updateData, repeat: event.repeat };
           }
         });
-        return HttpResponse.json(mockEvents.filter((e) => (e.repeat as any).id === repeatId));
+        return HttpResponse.json(
+          mockEvents.filter((e) => {
+            const r = e.repeat as {
+              type: string;
+              interval: number;
+              endDate?: string;
+              id?: string;
+            };
+            return r.id === repeatId;
+          })
+        );
       })
     );
 
@@ -1308,7 +1345,8 @@ describe('반복 일정 삭제 (SC-01 ~ SC-04)', () => {
       http.delete('/api/recurring-events/:baseId', ({ params }) => {
         const { baseId: bid } = params as { baseId: string };
         for (let i = mockEvents.length - 1; i >= 0; i -= 1) {
-          if ((mockEvents[i] as any).baseId === bid) mockEvents.splice(i, 1);
+          const evt = mockEvents[i] as Event & { baseId?: string };
+          if (evt.baseId === bid) mockEvents.splice(i, 1);
         }
         return new HttpResponse(null, { status: 204 });
       })

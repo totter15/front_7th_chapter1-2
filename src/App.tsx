@@ -76,8 +76,13 @@ const repeatTypeOptions: Array<{ value: RepeatType; label: string }> = [
 
 // 반복 시리즈 식별자 해석 (repeat.id 우선, baseId fallback)
 const resolveRecurringSeriesId = (event: Event): string => {
-  const repeatId = (event.repeat as any).id;
-  if (repeatId) return repeatId;
+  const repeatWithId = event.repeat as {
+    type: string;
+    interval: number;
+    endDate?: string;
+    id?: string;
+  };
+  if (repeatWithId.id) return repeatWithId.id;
 
   const withBase = event as unknown as { baseId?: string };
   return withBase.baseId ?? event.id;
