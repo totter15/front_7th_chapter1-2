@@ -53,8 +53,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
           body: JSON.stringify(eventData),
         });
       } else {
-        const isRepeatingEvent =
-          eventData.repeat.type !== 'none' && eventData.repeat.endDate;
+        const isRepeatingEvent = eventData.repeat.type !== 'none' && eventData.repeat.endDate;
         response = isRepeatingEvent
           ? await createRecurringEvents(eventData as EventForm)
           : await createSingleEvent(eventData as EventForm);
