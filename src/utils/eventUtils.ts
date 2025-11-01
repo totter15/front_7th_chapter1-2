@@ -111,7 +111,7 @@ export function generateRecurringEvents(
       repeat: {
         ...eventForm.repeat,
         id: baseId, // 서버가 사용할 repeat.id로 전달
-      } as any,
+      } as typeof eventForm.repeat & { id: string },
       baseId, // 클라이언트 편의용
     });
 
