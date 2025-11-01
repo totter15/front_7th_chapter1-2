@@ -75,7 +75,7 @@ app.delete('/api/events/:id', async (req, res) => {
 
 app.post('/api/events-list', async (req, res) => {
   const events = await getEvents();
-  const repeatId = randomUUID();
+  const repeatId = req.body.events[0]?.repeat?.id || randomUUID();
   const newEvents = req.body.events.map((event) => {
     const isRepeatEvent = event.repeat.type !== 'none';
     return {

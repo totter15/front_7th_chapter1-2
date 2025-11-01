@@ -107,6 +107,27 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
     }
   };
 
+  const updateRecurringSeries = async (repeatId: string, eventData: Partial<Event>) => {
+    try {
+      const response = await fetch(`/api/recurring-events/${repeatId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(eventData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update recurring series');
+      }
+
+      await fetchEvents();
+      onSave?.();
+      enqueueSnackbar('일정이 수정되었습니다.', { variant: 'success' });
+    } catch (error) {
+      console.error('Error updating recurring series:', error);
+      enqueueSnackbar('일정 수정 실패', { variant: 'error' });
+    }
+  };
+
   async function init() {
     await fetchEvents();
     enqueueSnackbar('일정 로딩 완료!', { variant: 'info' });
@@ -117,5 +138,12 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { events, fetchEvents, saveEvent, deleteEvent, deleteRecurringSeries };
+  return {
+    events,
+    fetchEvents,
+    saveEvent,
+    deleteEvent,
+    deleteRecurringSeries,
+    updateRecurringSeries,
+  };
 };

@@ -990,7 +990,7 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
 
   // TC-04: '아니오' 선택 시 전체 시리즈 수정
   it('TC-04: 다이얼로그에서 아니오를 선택하면 반복 설정을 유지한 채로 전체 시리즈가 수정된다', async () => {
-    const mockEvents: Event[] = [
+    const mockEvents: Array<Event & { baseId?: string }> = [
       {
         id: '1',
         title: '반복 회의',
@@ -1000,8 +1000,9 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
         description: '매주 반복 회의',
         location: '회의실 A',
         category: '업무',
-        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15', id: 'series-1' } as any,
         notificationTime: 10,
+        baseId: 'series-1',
       },
     ];
 
@@ -1018,6 +1019,18 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
         const index = mockEvents.findIndex((event) => event.id === id);
         mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
         return HttpResponse.json(mockEvents[index]);
+      }),
+      http.put('/api/recurring-events/:repeatId', async ({ params, request }) => {
+        const { repeatId } = params;
+        const updateData = (await request.json()) as Partial<Event>;
+        capturedRequestBody.current = updateData as Event;
+        // 같은 repeatId를 가진 모든 이벤트 업데이트
+        mockEvents.forEach((event, index) => {
+          if ((event.repeat as any).id === repeatId) {
+            mockEvents[index] = { ...event, ...updateData, repeat: event.repeat };
+          }
+        });
+        return HttpResponse.json(mockEvents.filter((e) => (e.repeat as any).id === repeatId));
       })
     );
 
@@ -1051,7 +1064,7 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
 
   // TC-05: '아니오' 선택 후 수정된 일정의 반복 아이콘 유지 확인
   it('TC-05: 전체 시리즈 수정 후에도 반복 아이콘이 유지된다', async () => {
-    const mockEvents: Event[] = [
+    const mockEvents: Array<Event & { baseId?: string }> = [
       {
         id: '1',
         title: '반복 회의',
@@ -1061,8 +1074,9 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
         description: '매주 반복 회의',
         location: '회의실 A',
         category: '업무',
-        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15' },
+        repeat: { type: 'weekly', interval: 1, endDate: '2025-11-15', id: 'series-1' } as any,
         notificationTime: 10,
+        baseId: 'series-1',
       },
     ];
 
@@ -1076,6 +1090,17 @@ describe('반복 일정 수정 (SC-01 ~ SC-06)', () => {
         const index = mockEvents.findIndex((event) => event.id === id);
         mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
         return HttpResponse.json(mockEvents[index]);
+      }),
+      http.put('/api/recurring-events/:repeatId', async ({ params, request }) => {
+        const { repeatId } = params;
+        const updateData = (await request.json()) as Partial<Event>;
+        // 같은 repeatId를 가진 모든 이벤트 업데이트
+        mockEvents.forEach((event, index) => {
+          if ((event.repeat as any).id === repeatId) {
+            mockEvents[index] = { ...event, ...updateData, repeat: event.repeat };
+          }
+        });
+        return HttpResponse.json(mockEvents.filter((e) => (e.repeat as any).id === repeatId));
       })
     );
 
