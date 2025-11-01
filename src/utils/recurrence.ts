@@ -122,6 +122,19 @@ export function expandEventsWithinWindow(
       }
       continue;
     }
+    
+    // 반복 일정이지만 endDate가 event.date와 같으면 이미 확장된 인스턴스로 간주
+    const eventDate = new Date(event.date);
+    const endDate = event.repeat.endDate ? new Date(event.repeat.endDate) : null;
+    
+    if (endDate && eventDate.getTime() === endDate.getTime()) {
+      // 이미 확장된 단일 인스턴스 - 확장하지 않고 날짜 범위만 체크
+      if (isDateInRange(eventDate, windowStart, windowEnd)) {
+        expanded.push(event);
+      }
+      continue;
+    }
+    
     const occurrences = generateOccurrencesForEvent(event, windowStart, windowEnd);
     expanded.push(...occurrences);
   }
