@@ -78,7 +78,7 @@ const repeatTypeOptions: Array<{ value: RepeatType; label: string }> = [
 const resolveRecurringSeriesId = (event: Event): string => {
   const repeatId = (event.repeat as any).id;
   if (repeatId) return repeatId;
-  
+
   const withBase = event as unknown as { baseId?: string };
   return withBase.baseId ?? event.id;
 };
