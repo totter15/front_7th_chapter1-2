@@ -57,14 +57,16 @@ export function getFilteredEvents(
  * @param currentDate 현재 날짜
  * @param repeatType 반복 유형
  * @param interval 반복 간격
- * @param startDay 원본 시작일 (매월 반복 시 사용)
+ * @param startDay 원본 시작일 (매월/매년 반복 시 사용)
+ * @param startMonth 원본 시작월 (매년 반복 시 사용)
  * @returns 계산된 다음 날짜 (원본 객체 수정)
  */
 function calculateNextRecurrenceDate(
   currentDate: Date,
   repeatType: 'daily' | 'weekly' | 'monthly' | 'yearly',
   interval: number,
-  startDay?: number
+  startDay?: number,
+  startMonth?: number
 ): void {
   switch (repeatType) {
     case 'daily':
@@ -86,7 +88,18 @@ function calculateNextRecurrenceDate(
       }
       break;
     case 'yearly':
-      currentDate.setFullYear(currentDate.getFullYear() + interval);
+      if (startDay !== undefined && startMonth !== undefined) {
+        // 원본 월/일을 유지하며 다음 해로 이동
+        const nextYear = currentDate.getFullYear() + interval;
+
+        // 안전한 날짜(1일)로 먼저 설정 후 연도 변경, 그 다음 원본 날짜 설정
+        currentDate.setDate(1);
+        currentDate.setFullYear(nextYear);
+        currentDate.setMonth(startMonth);
+        currentDate.setDate(startDay);
+      } else {
+        currentDate.setFullYear(currentDate.getFullYear() + interval);
+      }
       break;
   }
 }
@@ -115,12 +128,23 @@ export function generateRecurringEvents(
   // 시리즈 식별자 생성 (제목-시작일-종료일-타입)
   const baseId = `${eventForm.title}-${date}-${repeat.endDate}-${repeat.type}`;
 
+  const startMonth = startDate.getMonth(); // 매년 반복 시 원본 월 유지용
+
   while (currentDate <= endDate) {
     const currentDateStr = formatDate(currentDate);
 
     // 매월 반복: 원본 날짜(startDay)와 현재 날짜가 일치할 때만 추가
     if (repeat.type === 'monthly' && currentDate.getDate() !== startDay) {
-      calculateNextRecurrenceDate(currentDate, repeat.type, repeat.interval, startDay);
+      calculateNextRecurrenceDate(currentDate, repeat.type, repeat.interval, startDay, startMonth);
+      continue;
+    }
+
+    // 매년 반복: 원본 월/일과 현재 월/일이 모두 일치할 때만 추가
+    if (
+      repeat.type === 'yearly' &&
+      (currentDate.getMonth() !== startMonth || currentDate.getDate() !== startDay)
+    ) {
+      calculateNextRecurrenceDate(currentDate, repeat.type, repeat.interval, startDay, startMonth);
       continue;
     }
 
@@ -134,7 +158,7 @@ export function generateRecurringEvents(
       baseId, // 클라이언트 편의용
     });
 
-    calculateNextRecurrenceDate(currentDate, repeat.type, repeat.interval, startDay);
+    calculateNextRecurrenceDate(currentDate, repeat.type, repeat.interval, startDay, startMonth);
   }
 
   return events;
