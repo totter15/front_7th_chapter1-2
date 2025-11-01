@@ -83,9 +83,11 @@ function calculateNextRecurrenceDate(
 /**
  * 반복 일정을 생성하여 EventForm 배열을 반환합니다.
  * @param eventForm 기본 이벤트 정보 (반복 설정 포함)
- * @returns 생성된 반복 일정 배열
+ * @returns 생성된 반복 일정 배열 (각 인스턴스는 baseId로 연결됨)
  */
-export function generateRecurringEvents(eventForm: EventForm): EventForm[] {
+export function generateRecurringEvents(
+  eventForm: EventForm
+): Array<EventForm & { baseId?: string }> {
   const { repeat, date } = eventForm;
 
   // 반복이 아니면 빈 배열 반환
@@ -95,8 +97,11 @@ export function generateRecurringEvents(eventForm: EventForm): EventForm[] {
 
   const startDate = new Date(date);
   const endDate = new Date(repeat.endDate);
-  const events: EventForm[] = [];
+  const events: Array<EventForm & { baseId?: string }> = [];
   let currentDate = new Date(startDate);
+
+  // 시리즈 식별자 생성 (제목-시작일-종료일-타입)
+  const baseId = `${eventForm.title}-${date}-${repeat.endDate}-${repeat.type}`;
 
   while (currentDate <= endDate) {
     const currentDateStr = formatDate(currentDate);
@@ -105,8 +110,9 @@ export function generateRecurringEvents(eventForm: EventForm): EventForm[] {
       date: currentDateStr,
       repeat: {
         ...eventForm.repeat,
-        endDate: currentDateStr, // 각 인스턴스의 endDate를 자기 날짜로 설정
-      },
+        id: baseId, // 서버가 사용할 repeat.id로 전달
+      } as any,
+      baseId, // 클라이언트 편의용
     });
 
     calculateNextRecurrenceDate(currentDate, repeat.type, repeat.interval);

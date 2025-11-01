@@ -74,8 +74,11 @@ const repeatTypeOptions: Array<{ value: RepeatType; label: string }> = [
   { value: 'yearly', label: '매년' },
 ];
 
-// 반복 시리즈 식별자 해석
+// 반복 시리즈 식별자 해석 (repeat.id 우선, baseId fallback)
 const resolveRecurringSeriesId = (event: Event): string => {
+  const repeatId = (event.repeat as any).id;
+  if (repeatId) return repeatId;
+  
   const withBase = event as unknown as { baseId?: string };
   return withBase.baseId ?? event.id;
 };
@@ -147,10 +150,8 @@ function App() {
     editEvent,
   } = useEventForm();
 
-  const { events, saveEvent, deleteEvent, deleteRecurringSeries } = useEventOperations(
-    Boolean(editingEvent),
-    () => setEditingEvent(null)
-  );
+  const { events, saveEvent, deleteEvent, deleteRecurringSeries, updateRecurringSeries } =
+    useEventOperations(Boolean(editingEvent), () => setEditingEvent(null));
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
@@ -164,6 +165,7 @@ function App() {
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
   const [isEditRecurringDialogOpen, setIsEditRecurringDialogOpen] = useState(false);
   const [pendingEditEvent, setPendingEditEvent] = useState<Event | null>(null);
+  const [isEditingWholeSeries, setIsEditingWholeSeries] = useState(false);
   const [isDeleteRecurringDialogOpen, setIsDeleteRecurringDialogOpen] = useState(false);
   const [pendingDeleteEvent, setPendingDeleteEvent] = useState<Event | null>(null);
 
@@ -187,6 +189,7 @@ function App() {
         ...pendingEditEvent,
         repeat: { type: 'none', interval: 1 },
       };
+      setIsEditingWholeSeries(false);
       editEvent(singleEvent);
     }
     setIsEditRecurringDialogOpen(false);
@@ -195,7 +198,8 @@ function App() {
 
   const handleEditAllOccurrences = () => {
     if (pendingEditEvent) {
-      // 전체 시리즈 수정
+      // 전체 시리즈 수정 플래그 설정
+      setIsEditingWholeSeries(true);
       editEvent(pendingEditEvent);
     }
     setIsEditRecurringDialogOpen(false);
@@ -258,6 +262,15 @@ function App() {
       },
       notificationTime,
     };
+
+    // 전체 시리즈 수정인 경우
+    if (editingEvent && isEditingWholeSeries && editingEvent.repeat.type !== 'none') {
+      const repeatId = resolveRecurringSeriesId(editingEvent);
+      await updateRecurringSeries(repeatId, eventData);
+      setIsEditingWholeSeries(false);
+      resetForm();
+      return;
+    }
 
     // 반복일정은 겹침 검사를 수행하지 않음
     const isRepeatingEvent = eventData.repeat.type !== 'none';
