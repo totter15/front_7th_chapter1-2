@@ -99,9 +99,14 @@ export function generateRecurringEvents(eventForm: EventForm): EventForm[] {
   let currentDate = new Date(startDate);
 
   while (currentDate <= endDate) {
+    const currentDateStr = formatDate(currentDate);
     events.push({
       ...eventForm,
-      date: formatDate(currentDate),
+      date: currentDateStr,
+      repeat: {
+        ...eventForm.repeat,
+        endDate: currentDateStr, // 각 인스턴스의 endDate를 자기 날짜로 설정
+      },
     });
 
     calculateNextRecurrenceDate(currentDate, repeat.type, repeat.interval);
